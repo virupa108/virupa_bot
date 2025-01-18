@@ -1,0 +1,23 @@
+
+TWEET ANALYZER PROMTS
+
+prompt = """Analyze these tweets and identify important content based on:
+1. Tech industry news and developments
+2. AI/ML advancements
+3. Market insights
+4. Original research or analysis
+5. Breaking news in relevant fields
+
+Ignore:
+- Personal updates
+- General commentary
+- Promotional content
+- Repeated information
+
+Format output as:
+HIGH PRIORITY:
+- Tweet summary (why it's important)
+
+MEDIUM PRIORITY:
+- Tweet summary (context)
+"""
