@@ -1,15 +1,15 @@
-from app.tweetformater import TweetFormatter
-from app.utils.config import Config
 import tweepy
 import colorama
+from app.tweetformater import TweetFormatter
+from app.utils.config import Config
 from app.models.tweet import Base, Tweet
 from app.database.session import engine, SessionLocal
 
 db = SessionLocal()
 colorama.init()
 
-# config = Config(local_test=False)
-config = Config(local_test=True, load_from_db=False)
+config = Config(local_test=False)
+# config = Config(local_test=True, load_from_db=False)
 
 client = tweepy.Client(
     bearer_token=config.BEARER_TOKEN,
@@ -41,11 +41,10 @@ try:
     # Save tweets to db
     for tweet_data in tweets:
         tweet = Tweet(
-            id=tweet_data.id,
-            text=tweet_data.text,
-            created_at=tweet_data.created_at,
-            author_id=tweet_data.author_id,
-            metrics=tweet_data.public_metrics,
+            tweet_id=tweet_data['id'],
+            text=tweet_data['text'],
+            created_at=tweet_data['created_at'],
+            author_id=tweet_data['author_id'],
             list_id=config.TWITTER_LIST_ID_SHITPOST,
         )
         db.add(tweet)
