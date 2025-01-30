@@ -62,50 +62,6 @@ class TweetFormatter:
 
         return tweets_data
 
-    def fetch_list_tweets(self, list_id, count=15):
-        """Fetch tweets from a list"""
-        try:
-            response = self.client.get_list_tweets(
-                id=list_id,
-                max_results=count,
-                tweet_fields=[
-                    "created_at",
-                    "public_metrics",
-                    "author_id",
-                    "text",
-                    "conversation_id",
-                    "in_reply_to_user_id",
-                    "referenced_tweets",
-                    "attachments",
-                ],
-                user_fields=["username", "name"],
-                expansions=["author_id", "referenced_tweets.id"],
-            )
-        except Exception as e:
-            print(f"Error fetching list tweets: {e}")
-            return []
-
-        # Convert to serializable format
-        tweets_data = self.convert_to_serializable(response)
-        return tweets_data
-
-    def convert_to_serializable(self, tweets):
-        """Convert tweets to serializable format"""
-        users = {u.id: u.data for u in tweets.includes["users"]}
-        tweets_data = []
-        for tweet in tweets.data:
-            tweets_data.append(
-                {
-                    "id": str(tweet.id),
-                    "text": tweet.text,
-                    "created_at": tweet.created_at.isoformat(),
-                    "metrics": tweet.public_metrics,
-                    "author": users[tweet.author_id],
-                    "author_id": tweet.author_id,
-                }
-            )
-
-        return tweets_data
 
     def save_tweets(self, tweets):
         """Save tweets to JSON file"""
@@ -123,37 +79,38 @@ class TweetFormatter:
     def format_style(self, tweets):
         """Card style in single column with grouped metrics (based on style 3)"""
 
-        def format_date(iso_date):
-            dt = datetime.fromisoformat(iso_date)
+        def format_date(date):
+            """Format date for display. Accepts both datetime object and ISO string"""
+            if isinstance(date, str):
+                dt = datetime.fromisoformat(date)
+            else:
+                dt = date  # Already a datetime object
             return dt.strftime("%b %d, %H:%M")
 
         def create_tweet_panel(tweet):
             # Create tweet URL
-            username = tweet["author"]["username"]
-            tweet_id = tweet.get("id", "")
+            username = tweet.author_username
+            name = tweet.author_name
+            tweet_id = tweet.tweet_id
             tweet_url = f"https://x.com/{username}/status/{tweet_id}"
+            tweet_text = tweet.text
 
             # Check if it's a retweet (text starts with "RT @")
-            is_retweet = tweet["text"].startswith("RT @")
+            is_retweet = tweet_text.startswith("RT @")
             border_color = "red" if is_retweet else "cyan"
 
             # Header with user info
-            header = f"[bold blue]{tweet['author']['name']}[/] " f"[cyan]@{username}[/]"
+            header = f"[bold blue]{name}[/] " f"[cyan]@{username}[/]"
 
-            # Format metrics in groups
-            metrics = tweet["metrics"]
             engagement = (
-                f"[red]♥ {metrics['like_count']}[/]  "
-                f"[green]🔄 {metrics['retweet_count']}[/]  "
-                f"[blue]💬 {metrics['reply_count']}[/]  "
                 f"[link]{tweet_url}[/link]"  # Direct URL is more compatible
             )
 
             # Format content
             content = (
                 f"{header}\n"
-                f"[dim]{format_date(tweet['created_at'])}[/]\n\n"
-                f"{tweet['text']}\n\n"
+                f"[dim]{format_date(tweet.created_at)}[/]\n\n"
+                f"{tweet_text}\n\n"
                 f"{engagement}"
             )
 
@@ -168,7 +125,7 @@ class TweetFormatter:
             )
 
         # Create and display panels one by one
-        for tweet in tweets:
+        for tweet in reversed(tweets):
             self.console.print(create_tweet_panel(tweet))
             # Add small spacing between tweets
             self.console.print("")

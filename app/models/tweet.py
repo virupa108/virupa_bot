@@ -13,6 +13,8 @@ class Tweet(Base):
     created_at = Column(DateTime)
     author_id = Column(String)
     list_id = Column(String)
+    author_username = Column(String)
+    author_name = Column(String)
 
     def __repr__(self):
         return f"<Tweet(id={self.id}, tweet_id={self.tweet_id}, author_id={self.author_id})>"

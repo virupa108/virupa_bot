@@ -42,8 +42,12 @@ logs-%:
 ps:
 	$(DC) ps
 
-# Remove all containers, volumes, and images
+# Remove all containers
 clean:
+	$(DC) down
+
+# Remove all containers, volumes, and images
+clean_total:
 	$(DC) down -v --rmi all
 
 # Remove all unused containers, networks, images and volumes
@@ -163,6 +167,10 @@ db-show:
 # Count rows in table (usage: make db-count name=tweets)
 db-count:
 	$(DC) exec db psql -U user twitter_db -c "SELECT COUNT(*) FROM $(name);"
+
+# Truncate specific table (usage: make db-truncate name=tweets)
+db-truncate:
+	$(DC) exec db psql -U user twitter_db -c "TRUNCATE TABLE $(name) CASCADE;"
 
 # Fix permissions for all files in project directory
 fix-perms:

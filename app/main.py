@@ -4,59 +4,61 @@ from app.tweetformater import TweetFormatter
 from app.utils.config import Config
 from app.models.tweet import Base, Tweet
 from app.database.session import engine, SessionLocal
+from app.services.tweet_service import update_list_tweets
+from app.repositories.tweet_repository import get_recent_tweets, get_tweets_by_list, get_tweets
+from app.utils import setup_logger
 
+# Set up logging with colors
+logger = setup_logger()
+
+# Initialize database and colorama
 db = SessionLocal()
 colorama.init()
 
-config = Config(local_test=False)
-# config = Config(local_test=True, load_from_db=False)
-
-client = tweepy.Client(
-    bearer_token=config.BEARER_TOKEN,
-    consumer_key=config.API_KEY,
-    consumer_secret=config.API_SECRET_KEY,
-    access_token=config.ACCESS_TOKEN,
-    access_token_secret=config.ACCESS_TOKEN_SECRET,
-)
-
-formatter = TweetFormatter(client=client)
-# fetch tweets and save to json
-tweets_cache_file_exists = formatter.cache_file.exists()
-if tweets_cache_file_exists and config.LOCAL_TEST:
-    print("loading tweets from cache")
-    tweets = formatter.load_tweets()
-else:
-    print("fetching tweets from API")
-    # tweets = formatter.fetch_tweets()
-    tweets = formatter.fetch_list_tweets(config.TWITTER_LIST_ID_SHITPOST)
-    if not config.LOCAL_TEST:
-        formatter.save_tweets(tweets)
-
-
-formatter.format_style(tweets)
-# Create tables
-Base.metadata.create_all(bind=engine)
-
-try:
-    # Save tweets to db
-    for tweet_data in tweets:
-        tweet = Tweet(
-            tweet_id=tweet_data['id'],
-            text=tweet_data['text'],
-            created_at=tweet_data['created_at'],
-            author_id=tweet_data['author_id'],
-            list_id=config.TWITTER_LIST_ID_SHITPOST,
+def main():
+    try:
+        # Initialize config and Twitter client
+        config = Config(local_test=True)
+        client = tweepy.Client(
+            bearer_token=config.BEARER_TOKEN,
+            consumer_key=config.API_KEY,
+            consumer_secret=config.API_SECRET_KEY,
+            access_token=config.ACCESS_TOKEN,
+            access_token_secret=config.ACCESS_TOKEN_SECRET,
         )
-        db.add(tweet)
-    db.commit()
-finally:
-    db.close()
 
+        # Create database tables if they don't exist
+        Base.metadata.create_all(bind=engine)
 
-# FETCH_INTERVAL = 300  # 5 minutes in seconds
+        # Initialize formatter for display
+        formatter = TweetFormatter(client=client)
 
-# while True:
-#     tweets = formatter.fetch_tweets()
-#     Save to DB here instead?
-#     or dont save and call openai API immidietly
-#     formatter.save_tweets(tweets)
+        if not config.LOCAL_TEST:
+            # In local test mode, just fetch from DB
+            # Normal mode - fetch from API and update DB
+            logger.info("--- Fetching new tweets from API ---")
+            for list_id in config.TWITTER_LISTS:
+                new_tweets_count = update_list_tweets(
+                    client=client,
+                    db=db,
+                    list_id=list_id
+                )
+            logger.info(f"--- Saved {new_tweets_count} new tweets ---")
+
+        # Get all tweets for display
+        display_tweets = get_tweets(db=db, limit=5)
+
+        # Display tweets using formatter
+        if display_tweets:
+            logger.info(f"--- Displaying {len(display_tweets)} tweets ---")
+            formatter.format_style(display_tweets)
+        else:
+            logger.info("--- No tweets to display, database is empty ---")
+
+    except Exception as e:
+        logger.error(f"--- Error in main: {str(e)} ---")
+    finally:
+        db.close()
+
+if __name__ == "__main__":
+    main()

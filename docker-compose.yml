@@ -7,6 +7,9 @@ services:
       - .:/app
     environment:
       - PYTHONDONTWRITEBYTECODE=1 # Don't create .pyc files
+      - TERM=xterm-256color
+      - FORCE_COLOR=1
+      - COLORTERM=truecolor
       - PYTHONUNBUFFERED=1 # Unbuffered output
       - DATABASE_URL=postgresql://user:password@db:5432/twitter_db
       - API_KEY=${API_KEY}
