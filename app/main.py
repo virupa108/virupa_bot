@@ -5,8 +5,14 @@ from app.utils.config import Config
 from app.models.tweet import Base, Tweet
 from app.database.session import engine, SessionLocal
 from app.services.tweet_service import update_list_tweets
-from app.repositories.tweet_repository import get_recent_tweets, get_tweets_by_list, get_tweets
+from app.repositories.tweet_repository import (
+    get_recent_tweets,
+    get_tweets_by_list,
+    get_tweets,
+)
 from app.utils import setup_logger
+from app.services.openai_service import OpenAIService
+from app.repositories.summary_repository import save_summary
 
 # Set up logging with colors
 logger = setup_logger()
@@ -15,10 +21,17 @@ logger = setup_logger()
 db = SessionLocal()
 colorama.init()
 
+# Initialize the service
+
+
 def main():
     try:
         # Initialize config and Twitter client
-        config = Config(local_test=True)
+        # config = Config(local_test=True)
+        config = Config(local_test=False)
+
+        openai_service = OpenAIService(db, config)
+
         client = tweepy.Client(
             bearer_token=config.BEARER_TOKEN,
             consumer_key=config.API_KEY,
@@ -39,9 +52,7 @@ def main():
             logger.info("--- Fetching new tweets from API ---")
             for list_id in config.TWITTER_LISTS:
                 new_tweets_count = update_list_tweets(
-                    client=client,
-                    db=db,
-                    list_id=list_id
+                    client=client, db=db, list_id=list_id
                 )
             logger.info(f"--- Saved {new_tweets_count} new tweets ---")
 
@@ -55,10 +66,21 @@ def main():
         else:
             logger.info("--- No tweets to display, database is empty ---")
 
+        # Get summary with default prompt
+        summary = openai_service.get_daily_summary()
+
+        if summary:
+            logger.info("\n=== Daily Tweet Summary ===")
+            logger.info(summary)
+            logger.info("==========================\n")
+        else:
+            logger.info("No summary generated for today")
+
     except Exception as e:
         logger.error(f"--- Error in main: {str(e)} ---")
     finally:
         db.close()
+
 
 if __name__ == "__main__":
     main()

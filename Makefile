@@ -1,7 +1,7 @@
 #.PHONY tells Make that these targets are commands to run, not files to create.
 # Without it, Make might think alembic is a file and skip running the command if
 # a file named alembic exists.
-.PHONY: build up down logs ps clean restart alembic alembic-create alembic-rollback alembic-history alembic-init alembic-stamp db-shell db-sizes db-backup db-restore db-connections db-kill-connections db-vacuum db-describe db-tables db-show db-count
+.PHONY: build up down logs ps clean restart alembic alembic-create alembic-rollback alembic-history alembic-init alembic-stamp db-shell db-sizes db-backup db-restore db-connections db-kill-connections db-vacuum db-describe db-tables db-show db-count db-query db-custom
 
 # Default Docker Compose file
 DC=docker-compose
@@ -195,3 +195,11 @@ db-kill-connections:
 # Vacuum analyze (cleanup and optimize)
 db-vacuum:
 	$(DC) exec db psql -U user twitter_db -c "VACUUM ANALYZE;"
+
+# Execute SQL query (usage: make db-query table=users)
+db-query:
+	$(DC) exec db psql -U user -d twitter_db -c "SELECT * FROM $(table);"
+
+# Alternative with custom query (usage: make db-custom query="SELECT id,name FROM users")
+db-custom:
+	$(DC) exec db psql -U user -d twitter_db -c "$(query)"

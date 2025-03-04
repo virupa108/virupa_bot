@@ -7,6 +7,7 @@ import time
 
 logger = logging.getLogger(__name__)
 
+
 def save_tweet(db, tweet_data):
     try:
         tweet = Tweet(
@@ -14,7 +15,7 @@ def save_tweet(db, tweet_data):
             text=tweet_data.text,
             created_at=tweet_data.created_at,
             author_id=str(tweet_data.author_id),
-            list_id=str(tweet_data.list_id)
+            list_id=str(tweet_data.list_id),
         )
         db.add(tweet)
         db.commit()
@@ -24,7 +25,10 @@ def save_tweet(db, tweet_data):
         # Tweet already exists
         return db.query(Tweet).filter(Tweet.tweet_id == str(tweet_data.id)).first()
 
-def fetch_list_tweets(client, list_id: str, since_id: str = None, limit: int = None) -> list:
+
+def fetch_list_tweets(
+    client, list_id: str, since_id: str = None, limit: int = None
+) -> list:
     """
     Fetch tweets from a list.
     Args:
@@ -36,7 +40,7 @@ def fetch_list_tweets(client, list_id: str, since_id: str = None, limit: int = N
     try:
         all_tweets = []
         all_users = {}
-        last_response = None # store for the user data
+        last_response = None  # store for the user data
         pagination_token = None
         retry_count = 0
         max_retries = 3
@@ -47,7 +51,7 @@ def fetch_list_tweets(client, list_id: str, since_id: str = None, limit: int = N
                 response = client.get_list_tweets(
                     id=list_id,
                     pagination_token=pagination_token,
-                    max_results=100,
+                    max_results=100,  # Maximum allowed by Twitter API
                     tweet_fields=[
                         "created_at",
                         "public_metrics",
@@ -59,15 +63,15 @@ def fetch_list_tweets(client, list_id: str, since_id: str = None, limit: int = N
                         "attachments",
                     ],
                     user_fields=["username", "name"],
-                    expansions=["author_id", "referenced_tweets.id"]
+                    expansions=["author_id", "referenced_tweets.id"],
                 )
 
                 if not response.data:
                     break
 
                 # Collect users from this page
-                if response.includes and 'users' in response.includes:
-                    for user in response.includes['users']:
+                if response.includes and "users" in response.includes:
+                    for user in response.includes["users"]:
                         all_users[user.id] = user
 
                 # If since_id is provided, filter tweets in memory
@@ -87,7 +91,7 @@ def fetch_list_tweets(client, list_id: str, since_id: str = None, limit: int = N
                     all_tweets = all_tweets[:limit]  # Trim to exact limit
                     break
 
-                pagination_token = response.meta.get('next_token')
+                pagination_token = response.meta.get("next_token")
                 if not pagination_token:
                     break
 
@@ -109,14 +113,13 @@ def fetch_list_tweets(client, list_id: str, since_id: str = None, limit: int = N
 
         return {
             "tweets": all_tweets,
-            "includes": { # to keep twitter api format
-                "users": all_users
-            }
+            "includes": {"users": all_users},  # to keep twitter api format
         }
 
     except Exception as e:
         logger.error(f"Error fetching tweets for list {list_id}: {str(e)}")
         return []
+
 
 def update_list_tweets(client, db, list_id: str):
     """
@@ -127,7 +130,9 @@ def update_list_tweets(client, db, list_id: str):
 
     if not since_id:
         logger.info("No tweets in DB, fetching initial batch...")
-        response = fetch_list_tweets(client, list_id, limit=100)  # Limit to 100 tweets, for initial load
+        response = fetch_list_tweets(
+            client, list_id, limit=100
+        )  # Limit to 100 tweets, for initial load
     else:
         logger.info(f"Fetching tweets since ID: {since_id}")
         response = fetch_list_tweets(client, list_id, since_id)
@@ -146,7 +151,7 @@ def update_list_tweets(client, db, list_id: str):
                 author_id=tweet["author_id"],
                 author_username=tweet["author_username"],
                 author_name=tweet["author_name"],
-                list_id=str(list_id)
+                list_id=str(list_id),
             )
             for tweet in tweets_data
         ]
@@ -159,6 +164,7 @@ def update_list_tweets(client, db, list_id: str):
         logger.error(f"Database error while saving tweets: {str(e)}", exc_info=True)
         db.rollback()
         return 0
+
 
 # convert tweets to serializable format for JSON
 def convert_to_serializable(response):
@@ -174,12 +180,15 @@ def convert_to_serializable(response):
             "created_at": tweet.created_at.isoformat(),
             "author_id": str(tweet.author_id),
             "author_username": users[tweet.author_id].username,
-            "author_name": users[tweet.author_id].name
+            "author_name": users[tweet.author_id].name,
         }
         for tweet in tweets
     ]
 
-def fetch_home_timeline(client, since_id: str = None, exclude_retweets: bool = True) -> list:
+
+def fetch_home_timeline(
+    client, since_id: str = None, exclude_retweets: bool = True
+) -> list:
     """
     Fetch tweets from home timeline.
     Args:
@@ -210,7 +219,7 @@ def fetch_home_timeline(client, since_id: str = None, exclude_retweets: bool = T
                 ],
                 user_fields=["username", "name"],
                 expansions=["author_id", "referenced_tweets.id"],
-                exclude=["retweets"] if exclude_retweets else []
+                exclude=["retweets"] if exclude_retweets else [],
             )
 
             if not response.data:
@@ -218,7 +227,7 @@ def fetch_home_timeline(client, since_id: str = None, exclude_retweets: bool = T
 
             all_tweets.extend(response.data)
 
-            pagination_token = response.meta.get('next_token')
+            pagination_token = response.meta.get("next_token")
             if not pagination_token:
                 break
 
