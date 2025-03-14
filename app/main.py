@@ -82,5 +82,20 @@ def main():
         db.close()
 
 
+def process_historical_summaries(max_days=None):
+    """CLI function to process historical summaries"""
+    try:
+        config = Config()
+        db = SessionLocal()
+        openai_service = OpenAIService(db, config)
+
+        openai_service.process_missing_summaries(max_days=max_days)
+
+    except Exception as e:
+        logger.error(f"Error processing historical summaries: {str(e)}")
+    finally:
+        db.close()
+
+
 if __name__ == "__main__":
     main()

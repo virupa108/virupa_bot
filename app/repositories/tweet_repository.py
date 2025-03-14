@@ -1,6 +1,8 @@
 from app.models.tweet import Tweet
 import logging
 from datetime import datetime
+from sqlalchemy import distinct, func, desc
+from app.models.summary import Summary
 
 logger = logging.getLogger(__name__)
 
@@ -71,5 +73,20 @@ def get_tweets_by_date_range(db, start_date: datetime, end_date: datetime):
         .filter(Tweet.created_at >= start_date)
         .filter(Tweet.created_at < end_date)
         .order_by(Tweet.created_at.desc())
+        .all()
+    )
+
+
+def get_dates_without_summaries(db):
+    """Get all dates that have tweets but no summaries, ordered by most recent first"""
+    return (
+        db.query(distinct(func.date_trunc("day", Tweet.created_at)).label("date"))
+        .outerjoin(
+            Summary,
+            func.date_trunc("day", Tweet.created_at)
+            == func.date_trunc("day", Summary.date_summarized),
+        )
+        .filter(Summary.id.is_(None))
+        .order_by(desc("date"))
         .all()
     )

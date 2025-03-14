@@ -40,3 +40,37 @@ class Config:
     }
 
     OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY")
+
+    # OpenAI Configuration
+    OPENAI_PROMPT_CONFIG = {
+        "DAILY_SUMMARY": {
+            # "model": "gpt-3.5-turbo-16k",
+            "model": "gpt-4-1106-preview",  # gpt-4-turbo-preview is an alias for gpt-4-1106-preview, which is the latest GPT-4 model with 128k context window and lower pricing
+            "temperature": 0.2,  # higher temp more creative response lower temp more determinsitc
+            "max_tokens": 3000,  # Increased to maximum recommended
+            "messages_roles": "system",
+        }
+    }
+
+    # OpenAI Prompts
+    PROMPTS = {
+        "DAILY_SUMMARY_PROMPT": """You are a professional investor speculator. Analyze tweets by list categories.
+        Lists have a different focus: - List Crypto Traders - List Airdrops - List Stocks.
+        I'm only interested in the tweets relevant to the list.
+        Create a comprehensive summary organized by list categories. as in format below
+        For Crypto Traders:
+            Insights - Key insights and important information, @userA is bullish on BTC
+            New projects - emerging trend, new projects investments, Fundamental project/protocol updates changes
+            Events - Important future events, token unlocks, macro events :FED meetings, option expirations, earnings, CPI prints
+        Airdrops:
+           Deadlines -  Crypto/NFT Airdrop deadline claims, deadlines for tasks/snapshots
+           Tasks - reminder of airdrop tasks
+           New airdrops - new airdrops to follow
+        Stocks:
+            Mentioned stocks - stocks on the timeline, name ticker and reason of mention
+            Earnings - earnings announcements
+            Speculation - short interest, analyst calls
+        Tweets to analyze:
+        {tweets}
+        """
+    }

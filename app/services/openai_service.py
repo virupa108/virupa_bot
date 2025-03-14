@@ -1,9 +1,14 @@
 from datetime import datetime, timedelta
 import logging
+import re
 from typing import List
 from openai import OpenAI
-from app.repositories.tweet_repository import get_tweets_by_date_range
+from app.repositories.tweet_repository import (
+    get_tweets_by_date_range,
+    get_dates_without_summaries,
+)
 from app.repositories.summary_repository import save_summary, get_summary_by_date
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -14,14 +19,11 @@ class OpenAIService:  # Renamed from SummaryService
         self.client = OpenAI(api_key=config.OPENAI_API_KEY)
         self.config = config
 
-    def get_daily_summary(
-        self, date: datetime = None, prompt_template: str = None
-    ) -> str:
+    def get_daily_summary(self, date: datetime = None) -> str:
         """
         Summarize tweets for a specific day using OpenAI
         Args:
             date: Date to summarize (defaults to today)
-            prompt_template: Custom prompt template for the summary
         """
         try:
             # Default to today if no date provided
@@ -44,18 +46,18 @@ class OpenAIService:  # Renamed from SummaryService
 
             # Format tweets for the prompt
             tweets_text = self._format_tweets_for_prompt(tweets)
+            # logger.info(f"Formatted tweets for prompt: {tweets_text}")
 
             # Generate prompt
-            prompt = self._create_prompt(tweets_text, prompt_template)
+            prompt = self._create_prompt(tweets_text)
 
             # Get summary from OpenAI
+            prompt_config = self.config.OPENAI_PROMPT_CONFIG["DAILY_SUMMARY"]
             response = self.client.chat.completions.create(
-                model="gpt-4",  # or gpt-3.5-turbo for faster/cheaper results
-                messages=[
-                    {"role": "system", "content": prompt},
-                ],
-                temperature=0.7,
-                max_tokens=1000,
+                model=prompt_config["model"],
+                temperature=prompt_config["temperature"],
+                max_tokens=prompt_config["max_tokens"],
+                messages=[{"role": prompt_config["messages_roles"], "content": prompt}],
             )
 
             summary = response.choices[0].message.content
@@ -71,6 +73,18 @@ class OpenAIService:  # Renamed from SummaryService
             logger.error(f"Error generating summary: {str(e)}")
             return None
 
+    def _clean_tweet_text(self, text: str) -> str:
+        """Clean tweet text for the prompt"""
+        # Remove URLs to save tokens (optional)
+        text = re.sub(r"http\S+", "[link]", text)
+        # Remove unnecessary whitespace and newlines
+        text = " ".join(text.split())
+        # Remove all emojis
+        text = re.sub(r"[^\w\s]", "", text)
+        # Remove RT prefix
+        text = re.sub(r"^RT @\w+:", "", text).strip()
+        return text
+
     def _format_tweets_for_prompt(self, tweets: List) -> str:
         """Format tweets into a string for the prompt"""
         # Group tweets by list_id
@@ -81,66 +95,55 @@ class OpenAIService:  # Renamed from SummaryService
                 tweets_by_list[list_name] = []
             tweets_by_list[list_name].append(tweet)
 
-        # Format tweets by list
+        # Format tweets by list with optimized format
         formatted_sections = []
         for list_name, list_tweets in tweets_by_list.items():
-            formatted_sections.append(f"\nTweets from List {list_name}:")
-            for tweet in list_tweets:
-                formatted_sections.append(
-                    f"""
-                    Tweet author:  {tweet.author_name} (@{tweet.author_username}).\n
-                    Tweet content: \n{tweet.text}.\n
-                    Tweet created at: {tweet.created_at}.
-                    """
-                )
-        formated_llm_prompt = "\n".join(formatted_sections)
-        return formated_llm_prompt
+            formatted_sections.append(f"\n- {list_name} List")
+            # Sort by created_at for chronological order
+            sorted_tweets = sorted(
+                list_tweets, key=lambda x: x.created_at, reverse=True
+            )
 
-    def _create_prompt(self, tweets_text: str, custom_template: str = None) -> str:
+            for tweet in sorted_tweets:
+                cleaned_text = self._clean_tweet_text(tweet.text)
+                if not cleaned_text:  # empty text
+                    continue
+                formatted_sections.append(f"[@{tweet.author_username}] {cleaned_text}")
+
+        return "\n".join(formatted_sections)
+
+    def _create_prompt(self, tweets_text: str) -> str:
         """Create the prompt for OpenAI"""
-        default_template = """
-        You are a professional investor and speculator content curator and summarizer. Analyze these tweets which are grouped by different Twitter lists.
-        Each list has a different focus:
-        - List Crypto Traders
-        - List Airdrops
-        - List Stocks
-        and others etc.
+        prompt = self.config.PROMPTS["DAILY_SUMMARY_PROMPT"]
+        return prompt.format(tweets=tweets_text)
 
-        Ignore funny tweets, memes, jokes, satirical tweets, etc.
-
-        Create a comprehensive summary organized by list categories.
-        For List Crypto Traders tweets, focus on:
-            Sentiment - Main topics and themes try to identify user's sentiment, example: @userA is bullish on BTC, @userB is frustrated or bearish on ETH
-            Insights - Key insights and important information
-            Updates - Fundamental project/protocol updates or changes
-            Emerging trends - Emerging trends
-            New projects - New projects investments in stocks or crypto
-            Events - reminder of Important future events, token unlocks, macro events such as FED meetings, big option expirations, stock earnings, CPI prints
-
-        For list Airdrops tweets, focus on:
-           Deadlines -  Crypto Airdrop deadline claims or task deadlines, deadlines for snapshots etc. even for NFTs
-           Tasks - reminder of tasks to complete for airdrop
-           New airdrops - new airdrops to watch out for
-
-        For list Stocks tweets, focus on:
-            Mentioned stocks - mentioned stocks on the timeline their name ticker and reason of mention
-            Earnings - earnings announcements and information
-            Speculation - such as short interest, analyst calls, etc
-
-        List Crypto Traders:
-            Sentiment - "<analysis here>"
-            Insights - "<analysis here>"
-            Updates - "<analysis here>"
-            Emerging trends - "<analysis here>"
-            New projects - "<analysis here>"
-            Events - "<analysis here>"
-
-        etc.. same for other lists
-
-        Tweets to analyze:
-
-        {tweets}
+    def process_missing_summaries(self, max_days=None, delay_seconds=1):
         """
+        Generate summaries for all dates that have tweets but no summaries
+        Args:
+            max_days: Optional limit on number of days to process, starting from most recent
+            delay_seconds: Delay between API calls to respect rate limits
+        """
+        try:
+            dates = get_dates_without_summaries(self.db)
+            total_dates = len(dates) if not max_days else min(len(dates), max_days)
 
-        template = custom_template or default_template
-        return template.format(tweets=tweets_text)
+            logger.info(f"Found {total_dates} dates without summaries")
+
+            # Process dates from most recent
+            for i, date_row in enumerate(dates[:max_days] if max_days else dates):
+                date = date_row.date
+                logger.info(f"Processing summaries for {date} ({i+1}/{total_dates})")
+
+                summary = self.get_daily_summary(date=date)
+                if summary:
+                    logger.info(f"Successfully generated summary for {date}")
+                else:
+                    logger.warning(f"Failed to generate summary for {date}")
+
+                time.sleep(delay_seconds)
+
+            logger.info("Completed processing historical summaries")
+
+        except Exception as e:
+            logger.error(f"Error in batch processing summaries: {str(e)}")
