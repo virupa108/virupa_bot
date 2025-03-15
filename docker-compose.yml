@@ -17,6 +17,9 @@ services:
       - ACCESS_TOKEN=${ACCESS_TOKEN}
       - ACCESS_TOKEN_SECRET=${ACCESS_TOKEN_SECRET}
       - BEARER_TOKEN=${BEARER_TOKEN}
+    ports:
+      - "8000:8000" # Added port for FastAPI
+    command: uvicorn app.api.main:app --host 0.0.0.0 --port 8000 --reload # Changed command to run FastAPI
     depends_on:
       - db
     networks:
@@ -27,6 +30,24 @@ services:
   #       timeout: 10s
   #       retries: 3
   #       start_period: 40s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules # Don't override node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:8000 # FastAPI endpoint
+    command: npm run dev
+    depends_on:
+      - app
+    networks:
+      - app-network
 
   db:
     image: postgres:15-alpine

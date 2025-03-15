@@ -18,3 +18,16 @@ psycopg2-binary
 sqlalchemy
 alembic
 openai
+
+# FastAPI dependencies
+fastapi
+uvicorn[standard]
+python-multipart  # for file uploads
+pydantic  # already included with FastAPI but good to specify
+pydantic-settings  # for settings management
+
+# CORS
+starlette
+
+# Date handling
+python-dateutil
