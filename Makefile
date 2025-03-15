@@ -207,3 +207,7 @@ db-custom:
 # Generate missing summaries (usage: make generate-summaries [days=N])
 generate-summaries:
 	$(DC) exec app python -c 'from app.main import process_historical_summaries; process_historical_summaries(max_days=$(if $(days),$(days),None))'
+
+# Fix frontend permissions
+fix-permissions:
+	sudo chown -R ${USER}:${USER} frontend/

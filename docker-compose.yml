@@ -37,7 +37,8 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./frontend:/app
-      - /app/node_modules # Don't override node_modules
+      - /app/node_modules
+    user: "${UID}:${GID}"
     ports:
       - "3000:3000"
     environment:
