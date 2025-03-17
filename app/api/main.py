@@ -20,8 +20,26 @@ app.add_middleware(
 )
 
 
+def parse_summary(text: str) -> dict:
+    sections = {"crypto_traders": "", "airdrops": "", "stocks": "", "other": ""}
+
+    # Split by main sections
+    parts = text.split("\n\n")
+    for part in parts:
+        if part.startswith("For Crypto Traders:"):
+            sections["crypto_traders"] = part
+        elif part.startswith("Airdrops:"):
+            sections["airdrops"] = part
+        elif part.startswith("Stocks:"):
+            sections["stocks"] = part
+        elif part.startswith("Other Notable Tweets:"):
+            sections["other"] = part
+
+    return sections
+
+
 @app.get("/api/summaries/")
-def get_summaries(days: int = 7, db: Session = Depends(get_db)):
+def get_summaries(days: int = 30, db: Session = Depends(get_db)):
     """Get summaries for the last N days"""
     end_date = datetime.utcnow()
     start_date = end_date - timedelta(days=days)
@@ -32,8 +50,18 @@ def get_summaries(days: int = 7, db: Session = Depends(get_db)):
         .order_by(Summary.date_summarized.desc())
         .all()
     )
+    print(f"Summaries: {summaries}")
 
-    return summaries
+    return [
+        {
+            "id": s.id,
+            "date_summarized": s.date_summarized,
+            "sections": parse_summary(s.summary_text),
+        }
+        for s in summaries
+    ]
+
+    # return summaries
 
 
 @app.get("/api/tweets/{date}")
