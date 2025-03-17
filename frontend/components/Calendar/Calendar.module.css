@@ -14,3 +14,29 @@
 .summaryText {
   @apply whitespace-pre-wrap;
 }
+
+/* Calendar specific styles */
+.calendar {
+  font-family: -apple-system, system-ui, sans-serif;
+}
+
+.calendar :global(.rbc-calendar) {
+  height: calc(100vh - 200px);
+  min-height: 600px;
+}
+
+.calendar :global(.rbc-header) {
+  padding: 8px;
+  font-weight: 600;
+}
+
+.calendar :global(.rbc-today) {
+  background-color: #f0f9ff;
+}
+
+.calendar :global(.rbc-event) {
+  padding: 4px 8px !important;
+  background-color: #0969da;
+  border: none;
+  border-radius: 4px;
+}

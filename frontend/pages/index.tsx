@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
-import { Calendar } from '../components/Calendar'
-import { addDays, subDays } from 'date-fns'
+import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar'
+import { format, parse, startOfWeek, getDay } from 'date-fns'
+import 'react-big-calendar/lib/css/react-big-calendar.css'
+import styles from '../components/Calendar/Calendar.module.css'
 
 interface Summary {
   id: number
@@ -8,54 +10,91 @@ interface Summary {
   date_summarized: string
 }
 
+interface CalendarEvent {
+  title: string
+  start: Date
+  end: Date
+  allDay?: boolean
+}
 
-const mockSummaries: Summary[] = [
-    {
-      id: 1,
-      summary_text: "Started working on the new project",
-      date_summarized: new Date().toISOString()
-    },
-    {
-      id: 2,
-      summary_text: "Team meeting about frontend development",
-      date_summarized: addDays(new Date(), 2).toISOString()
-    },
-    {
-      id: 3,
-      summary_text: "Completed the calendar component",
-      date_summarized: subDays(new Date(), 1).toISOString()
-    }
-  ]
+const locales = {
+  'en-US': require('date-fns/locale/en-US')
+}
+
+const localizer = dateFnsLocalizer({
+  format,
+  parse,
+  startOfWeek,
+  getDay,
+  locales,
+})
 
 export default function Home() {
-  const [summaries, setSummaries] = useState<Summary[]>(mockSummaries)
+  const [summaries, setSummaries] = useState<Summary[]>([])
+  const [events, setEvents] = useState<CalendarEvent[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // useEffect(() => {
-  //   const fetchSummaries = async () => {
-  //     try {
-  //       const res = await fetch('http://localhost:8000/api/summaries')
-  //       const data = await res.json()
-  //       setSummaries(data)
-  //     } catch (err: any) {
-  //       setError(err.message)
-  //     } finally {
-  //       setIsLoading(false)
-  //     }
-  //   }
+  useEffect(() => {
+    const fetchSummaries = async () => {
+      try {
+        const res = await fetch('http://localhost:8000/api/summaries')
+        const data: Summary[] = await res.json()
+        setSummaries(data)
 
-  //   fetchSummaries()
-  // }, [])
+        // Convert summaries to calendar events
+        const calendarEvents = data.map(summary => ({
+          title: summary.summary_text,
+          start: new Date(summary.date_summarized),
+          end: new Date(summary.date_summarized),
+          allDay: true
+        }))
+        setEvents(calendarEvents)
+      } catch (err: any) {
+        setError(err.message)
+      } finally {
+        setIsLoading(false)
+      }
+    }
 
-  // if (error) {
-  //   return <div className="text-red-500" role="alert">Error loading summaries: {error}</div>
-  // }
+    fetchSummaries()
+  }, [])
+
+  if (isLoading) return <div>Loading...</div>
+  if (error) return <div>Error: {error}</div>
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Daily Summaries</h1>
-      <Calendar summaries={mockSummaries} />
+    <div className={styles.calendarContainer}>
+      <div className={styles.calendar}>
+        <BigCalendar
+          localizer={localizer}
+          events={events}
+          startAccessor="start"
+          endAccessor="end"
+          style={{
+            height: 'calc(100vh - 200px)',
+            minHeight: '600px'
+          }}
+          views={['month', 'week', 'day']}
+          defaultView='month'
+          onSelectEvent={(event) => {
+            console.log('Selected event:', event);
+          }}
+          formats={{
+            eventTimeRangeFormat: () => '',
+            dayRangeHeaderFormat: ({ start, end }) =>
+              `${format(start, 'MMM d')} - ${format(end, 'MMM d, yyyy')}`
+          }}
+          eventPropGetter={(event) => ({
+            style: {
+              backgroundColor: '#0969da',
+              border: 'none',
+              borderRadius: '4px',
+              color: 'white'
+            }
+          })}
+        />
+      </div>
     </div>
   )
 }
