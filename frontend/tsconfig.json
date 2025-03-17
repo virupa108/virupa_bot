@@ -24,7 +24,12 @@
     ],
     "paths": {
       "@/*": ["./*"]
-    }
+    },
+    "types": [
+      "@fullcalendar/core",
+      "@fullcalendar/daygrid",
+      "@fullcalendar/interaction"
+    ]
   },
   "include": [
     "next-env.d.ts",

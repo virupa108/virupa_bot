@@ -1,0 +1,16 @@
+/* Remove the imports entirely and keep only component styles */
+.calendarContainer {
+  @apply bg-white shadow rounded-lg p-6 max-w-4xl mx-auto;
+}
+
+.summaryContainer {
+  @apply mt-8 bg-white shadow rounded-lg p-6 max-w-4xl mx-auto;
+}
+
+.summaryTitle {
+  @apply text-xl font-semibold mb-2;
+}
+
+.summaryText {
+  @apply whitespace-pre-wrap;
+}
