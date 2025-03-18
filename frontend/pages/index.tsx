@@ -15,6 +15,8 @@ interface CalendarEvent {
   start: Date
   end: Date
   allDay?: boolean
+  summary: string
+  sections: Record<string, string>
 }
 
 const locales = {
@@ -28,6 +30,27 @@ const localizer = dateFnsLocalizer({
   getDay,
   locales,
 })
+
+const CustomEvent = ({ event }: { event: CalendarEvent }) => {
+  return (
+    <div className={styles.eventWrapper}>
+      <div className={styles.eventContent}>
+        OpenAI Summary
+      </div>
+      <div className={styles.customTooltip}>
+        <div className={styles.tooltipContent}>
+          {/* Parse and display sections */}
+          {Object.entries(event.sections).map(([section, content]) => (
+            <div key={section} className={styles.section}>
+              <h3 className={styles.sectionTitle}>{section}</h3>
+              <div className={styles.sectionContent}>{content}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default function Home() {
   const [summaries, setSummaries] = useState<Summary[]>([])
@@ -47,7 +70,9 @@ export default function Home() {
           title: summary.summary_text,
           start: new Date(summary.date_summarized),
           end: new Date(summary.date_summarized),
-          allDay: true
+          allDay: true,
+          summary: summary.summary_text,
+          sections: {}
         }))
         setEvents(calendarEvents)
       } catch (err: any) {
@@ -69,6 +94,9 @@ export default function Home() {
         <BigCalendar
           localizer={localizer}
           events={events}
+          components={{
+            event: CustomEvent
+          }}
           startAccessor="start"
           endAccessor="end"
           style={{
