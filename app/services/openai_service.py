@@ -126,6 +126,7 @@ class OpenAIService:  # Renamed from SummaryService
         """
         try:
             dates = get_dates_without_summaries(self.db)
+
             total_dates = len(dates) if not max_days else min(len(dates), max_days)
 
             logger.info(f"Found {total_dates} dates without summaries")
@@ -142,8 +143,17 @@ class OpenAIService:  # Renamed from SummaryService
                     logger.warning(f"Failed to generate summary for {date}")
 
                 time.sleep(delay_seconds)
-
             logger.info("Completed processing historical summaries")
 
         except Exception as e:
             logger.error(f"Error in batch processing summaries: {str(e)}")
+
+
+def process_yesterday_summary(openai_service):
+    yesterday = datetime.now(datetime.UTC).date() - timedelta(days=1)
+    return openai_service.get_daily_summary(date=yesterday)
+
+
+def process_today_summary(openai_service):
+    today = datetime.now(datetime.UTC).date()
+    return openai_service.get_daily_summary(date=today)

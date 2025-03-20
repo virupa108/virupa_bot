@@ -31,6 +31,7 @@ def main():
         config = Config(local_test=False)
 
         openai_service = OpenAIService(db, config)
+        # twitter_service = TwitterService(db, config) // TODO: add twitter service
 
         client = tweepy.Client(
             bearer_token=config.BEARER_TOKEN,

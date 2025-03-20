@@ -208,6 +208,14 @@ db-custom:
 generate-summaries:
 	$(DC) exec app python -c 'from app.main import process_historical_summaries; process_historical_summaries(max_days=$(if $(days),$(days),None))'
 
+# Generate summary for yesterday
+summary-yesterday:
+	$(DC) exec app python  -m app.main process_yesterday_summary
+
+# Generate summary for today
+summary-today:
+	$(DC) exec app python  -m app.main process_today_summary
+
 # Fix frontend permissions
-fix-permissions:
-	sudo chown -R ${USER}:${USER} frontend/
+fix-permissions-alembic:
+	sudo chown -R ${USER}:${USER} alembic/versions/*

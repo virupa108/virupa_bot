@@ -31,22 +31,11 @@ const localizer = dateFnsLocalizer({
   locales,
 })
 
-const CustomEvent = ({ event }: { event: CalendarEvent }) => {
+const OpenAISummaryEvent = ({ event }: { event: CalendarEvent }) => {
   return (
     <div className={styles.eventWrapper}>
       <div className={styles.eventContent}>
         OpenAI Summary
-      </div>
-      <div className={styles.customTooltip}>
-        <div className={styles.tooltipContent}>
-          {/* Parse and display sections */}
-          {Object.entries(event.sections).map(([section, content]) => (
-            <div key={section} className={styles.section}>
-              <h3 className={styles.sectionTitle}>{section}</h3>
-              <div className={styles.sectionContent}>{content}</div>
-            </div>
-          ))}
-        </div>
       </div>
     </div>
   );
@@ -95,7 +84,7 @@ export default function Home() {
           localizer={localizer}
           events={events}
           components={{
-            event: CustomEvent
+            event: OpenAISummaryEvent
           }}
           startAccessor="start"
           endAccessor="end"

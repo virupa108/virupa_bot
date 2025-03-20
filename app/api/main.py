@@ -7,6 +7,8 @@ from typing import List
 from app.database.session import get_db
 from app.models.summary import Summary
 from app.models.tweet import Tweet
+from app.models.event import Event
+from app.repositories import event_repository
 
 app = FastAPI()
 
@@ -53,3 +55,58 @@ def get_tweets_by_date(date: str, db: Session = Depends(get_db)):
         return tweets
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid date format")
+
+
+# Create event
+@app.post("/api/events/")
+def create_event(
+    title: str,
+    description: str,
+    start_date: datetime,
+    end_date: datetime,
+    db: Session = Depends(get_db),
+):
+    try:
+        event = event_repository.create_event(
+            db=db,
+            title=title,
+            description=description,
+            start_date=start_date,
+            end_date=end_date,
+        )
+        return event
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+# Update event
+# Update event
+@app.put("/api/events/{event_id}")
+def update_event(
+    event_id: int,
+    title: str = None,
+    description: str = None,
+    start_date: datetime = None,
+    end_date: datetime = None,
+    db: Session = Depends(get_db),
+):
+    update_data = {}
+    if title is not None:
+        update_data["title"] = title
+    if description is not None:
+        update_data["description"] = description
+    if start_date is not None:
+        update_data["start_date"] = start_date
+    if end_date is not None:
+        update_data["end_date"] = end_date
+
+    event = event_repository.update_event(db, event_id, **update_data)
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+    return event
+
+
+# get all events
+@app.get("/api/events/")
+def get_events(db: Session = Depends(get_db)):
+    return event_repository.get_all_events(db)

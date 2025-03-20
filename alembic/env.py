@@ -5,12 +5,23 @@ from sqlalchemy import pool
 
 from alembic import context
 
+
 # Import your models here
+from app.models.base import Base
+from app.models.summary import Summary
+from app.models.event import Event
+from app.models.tweet import Tweet
+
+
 import sys
 import os
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
-from app.models.tweet import Base  # Adjust this import path to match your project structure
+from app.models.tweet import (
+    Base,
+)  # Adjust this import path to match your project structure
+
 # from app.models.tweet_batch_analysis import Base  # If you have this model
 
 # this is the Alembic Config object, which provides
@@ -70,9 +81,7 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+        context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
             context.run_migrations()
