@@ -1,6 +1,30 @@
 /* Remove the imports entirely and keep only component styles */
 .calendarContainer {
-  @apply bg-white shadow rounded-lg p-6 max-w-4xl mx-auto;
+  @apply flex flex-col gap-4 p-4;
+}
+
+.buttonContainer {
+  @apply flex justify-end mb-4;
+}
+
+.addButton {
+  @apply bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 shadow-md;
+}
+
+.calendarWrapper {
+  @apply h-[calc(100vh-200px)] min-h-[600px];
+}
+
+.eventWrapper {
+  @apply p-2;
+}
+
+.eventContent {
+  @apply text-sm font-medium;
+}
+
+.summaryEvent {
+  @apply bg-blue-600 border-none rounded text-white;
 }
 
 .summaryContainer {

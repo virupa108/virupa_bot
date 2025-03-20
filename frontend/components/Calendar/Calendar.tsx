@@ -1,7 +1,12 @@
 import { useState } from 'react'
 import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar'
+import { EventModal } from "./EventModal"
+
 import { format, parse, startOfWeek, getDay } from 'date-fns'
 import "react-big-calendar/lib/css/react-big-calendar.css"
+import styles from './Calendar.module.css'
+import calendarStyles from './BigCalendar.module.css'
+
 
 const localizer = dateFnsLocalizer({
   format,
@@ -10,6 +15,16 @@ const localizer = dateFnsLocalizer({
   getDay,
   locales: { 'en-US': require('date-fns/locale/en-US') },
 })
+
+
+interface CalendarEvent {
+  title: string
+  start: Date
+  end: Date
+  allDay?: boolean
+  summary: string
+  sections: Record<string, string>
+}
 
 interface Summary {
   id: number
@@ -29,6 +44,16 @@ interface CalendarProps {
   summaries: Summary[]
 }
 
+const OpenAISummaryEvent = ({ event }: { event: CalendarEvent }) => {
+  return (
+    <div className={styles.eventWrapper}>
+      <div className={styles.eventContent}>
+        OpenAI Summary
+      </div>
+    </div>
+  );
+};
+
 export const Calendar = ({ summaries }: CalendarProps) => {
   const [selectedEvent, setSelectedEvent] = useState<Summary | null>(null)
   const [showEventModal, setShowEventModal] = useState(false)
@@ -40,114 +65,70 @@ export const Calendar = ({ summaries }: CalendarProps) => {
   })
 
   const events = summaries.map(summary => ({
-    title: 'Summary',
+    title: summary.summary_text,
     start: new Date(summary.date_summarized),
     end: new Date(summary.date_summarized),
-    resource: summary
+    resource: summary.summary_text
   }))
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleEventSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     // TODO: API call to create event
+    console.log("xx");
     setShowEventModal(false)
   }
 
   return (
-    <div className="flex flex-col gap-4 p-4">
-      <div className="flex justify-end mb-4">
+    <div className={styles.calendarContainer}>
+      <div className={styles.buttonContainer}>
         <button
           onClick={() => setShowEventModal(true)}
-          className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 shadow-md"
+          className={styles.addButton}
         >
           + Add Event
         </button>
       </div>
 
-      <div className="h-[600px]">
+      <div className={calendarStyles.calendar}>
         <BigCalendar
           localizer={localizer}
           events={events}
-          views={['month']}
+          components={{
+            event: OpenAISummaryEvent
+          }}
+          startAccessor="start"
+          endAccessor="end"
+          style={{
+            height: 'calc(100vh - 200px)',
+            minHeight: '600px'
+          }}
+          views={['month', 'week', 'day']}
           defaultView='month'
-          onSelectEvent={(event) => setSelectedEvent(event.resource)}
-          style={{ height: '100%' }}
+          onSelectEvent={(event) => {
+            console.log('Selected event:', event);
+          }}
+          formats={{
+            eventTimeRangeFormat: () => '',
+            dayRangeHeaderFormat: ({ start, end }) =>
+              `${format(start, 'MMM d')} - ${format(end, 'MMM d, yyyy')}`
+          }}
+          eventPropGetter={(event) => ({
+            className: styles.summaryEvent
+          })}
+          className={calendarStyles.calendar}
+          toolbarClassName={calendarStyles.toolbar}
         />
       </div>
 
-      {/* Event Modal */}
-      {showEventModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-            <h2 className="text-xl font-bold mb-4">Add New Event</h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block mb-1">Title</label>
-                <input
-                  type="text"
-                  value={newEvent.title}
-                  onChange={(e) => setNewEvent({...newEvent, title: e.target.value})}
-                  className="w-full border rounded p-2"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block mb-1">Description</label>
-                <textarea
-                  value={newEvent.description}
-                  onChange={(e) => setNewEvent({...newEvent, description: e.target.value})}
-                  className="w-full border rounded p-2"
-                  rows={3}
-                />
-              </div>
-
-              <div>
-                <label className="block mb-1">Start Date</label>
-                <input
-                  type="datetime-local"
-                  value={format(newEvent.start_date, "yyyy-MM-dd'T'HH:mm")}
-                  onChange={(e) => setNewEvent({...newEvent, start_date: new Date(e.target.value)})}
-                  className="w-full border rounded p-2"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block mb-1">End Date</label>
-                <input
-                  type="datetime-local"
-                  value={format(newEvent.end_date, "yyyy-MM-dd'T'HH:mm")}
-                  onChange={(e) => setNewEvent({...newEvent, end_date: new Date(e.target.value)})}
-                  className="w-full border rounded p-2"
-                  required
-                />
-              </div>
-
-              <div className="flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setShowEventModal(false)}
-                  className="px-4 py-2 text-gray-600 hover:text-gray-800"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                >
-                  Save Event
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {selectedEvent && (
-        <div className="p-4 bg-white shadow rounded">
-          <p>{selectedEvent.summary_text}</p>
-        </div>
-      )}
+      <EventModal
+        show={showEventModal}
+        onClose={() => setShowEventModal(false)}
+        onSubmit={handleEventSubmit}
+      />
     </div>
   )
+}
+
+export const CalendarComponent = () => {
+  return <Calendar summaries={[]}  />
 }

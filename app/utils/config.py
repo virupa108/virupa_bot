@@ -56,7 +56,7 @@ class Config:
     PROMPTS = {
         "DAILY_SUMMARY_PROMPT": """You are a professional investor speculator. Analyze tweets by list categories.
         Lists have a different focus: - List Crypto Traders - List Airdrops - List Stocks.
-        I'm only interested in the tweets relevant to the list.
+        I'm only interested in the tweets relevant to the list. I want to always know about potential new narratives forming.
         Create a comprehensive summary organized by list categories. as in format below
         For Crypto Traders:
             Insights - Key insights and important information, @userA is bullish on BTC
