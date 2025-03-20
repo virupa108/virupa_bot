@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar'
 import { EventModal } from "./EventModal"
+import { SummaryModal } from './SummaryModal'
 
 import { format, parse, startOfWeek, getDay } from 'date-fns'
 import "react-big-calendar/lib/css/react-big-calendar.css"
@@ -70,6 +71,10 @@ const convertEventsToCalendarEvents = (events: Event[]): CalendarEvent[] => {
 export const Calendar = () => {
   const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([])
   const [showEventModal, setShowEventModal] = useState(false)
+  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null)
+  const [showSummaryModal, setShowSummaryModal] = useState(false)
+  const [selectedSummary, setSelectedSummary] = useState<{description: string, date: Date} | null>(null)
+
   const fetchEventsAndSummaries = async () => {
     try {
       const [summariesResponse, eventsResponse] = await Promise.all([
@@ -119,6 +124,16 @@ export const Calendar = () => {
     }
   }
 
+  const handleSelectEvent = (event: CalendarEvent) => {
+    if (event.title === "OpenAI Summary") {
+      setSelectedSummary({
+        description: event.description,
+        date: event.start
+      });
+      setShowSummaryModal(true);
+    }
+  }
+
   useEffect(() => {
     fetchEventsAndSummaries()
   }, [])
@@ -149,9 +164,7 @@ export const Calendar = () => {
           }}
           views={['month', 'week', 'day']}
           defaultView='month'
-          onSelectEvent={(event) => {
-            console.log('Selected event:', event);
-          }}
+          onSelectEvent={handleSelectEvent}
           formats={{
             eventTimeRangeFormat: () => '',
             dayRangeHeaderFormat: ({ start, end }) =>
@@ -167,8 +180,22 @@ export const Calendar = () => {
 
       <EventModal
         show={showEventModal}
-        onClose={() => setShowEventModal(false)}
+        onClose={() => {
+          setShowEventModal(false)
+          setSelectedEvent(null)
+        }}
+        event={selectedEvent}
+        readOnly={selectedEvent?.title === "OpenAI Summary"}
         onSubmit={handleCalendarEventSubmit}
+      />
+
+      <SummaryModal
+        show={showSummaryModal}
+        onClose={() => {
+          setShowSummaryModal(false)
+          setSelectedSummary(null)
+        }}
+        summary={selectedSummary}
       />
     </div>
   )
