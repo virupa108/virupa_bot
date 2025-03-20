@@ -13,6 +13,23 @@ interface SummaryModalProps {
 export const SummaryModal = ({ show, onClose, summary }: SummaryModalProps) => {
   if (!show) return null;
 
+  const formatText = (text: string) => {
+    // Format usernames
+    const formattedText = text.replace(
+      /@(\w+)/g,
+      '<span class="' + styles.username + '">@$1</span>'
+    );
+
+    // Format section titles with the same style as "For Crypto Traders:"
+    return formattedText.replace(
+      /^(Crypto Traders|For Crypto Traders:|Airdrops:|Stocks:)$/gm,
+      '<div class="' + styles.mainSectionTitle + '">$1</div>'
+    ).replace(
+      /^- (Insights|Events|News|Updates|Projects|New projects|New Airdrops|Deadlines|Tasks|New airdrops|Earnings|Speculation|Mentioned stocks):/gm,
+      '<div class="' + styles.subTitle + '">$1:</div>'
+    );
+  };
+
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
       <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
@@ -22,7 +39,12 @@ export const SummaryModal = ({ show, onClose, summary }: SummaryModalProps) => {
         </div>
         <div className={styles.modalBody}>
           {summary?.description ? (
-            <p className={styles.summaryText}>{summary.description}</p>
+            <div
+              className={styles.summaryText}
+              dangerouslySetInnerHTML={{
+                __html: formatText(summary.description)
+              }}
+            />
           ) : (
             <p>No summary available</p>
           )}
