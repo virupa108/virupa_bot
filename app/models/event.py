@@ -9,8 +9,8 @@ class Event(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     title = Column(String, nullable=False)
     description = Column(Text)
-    start_date = Column(DateTime, nullable=False)
-    end_date = Column(DateTime, nullable=False)
+    start = Column(DateTime, nullable=False)
+    end = Column(DateTime, nullable=False)
     created_at = Column(DateTime, default=datetime.now(timezone.utc), nullable=False)
     updated_at = Column(
         DateTime,
@@ -20,6 +20,4 @@ class Event(Base):
     event_type = Column(String, default="manual")  # 'manual' or other types
 
     def __repr__(self):
-        return (
-            f"<Event(id={self.id}, title='{self.title}', start_date={self.start_date})>"
-        )
+        return f"<Event(id={self.id}, title='{self.title}', start={self.start})>"

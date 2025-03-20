@@ -2,28 +2,23 @@ import { useState, useRef, useEffect } from 'react'
 import { format } from 'date-fns'
 import styles from './EventModal.module.css'
 
+import { CalendarEvent } from './Calendar'
 
-interface Event {
-  title: string
-  description: string
-  start_date: Date
-  end_date: Date
-}
 
 interface EventModalProps {
   show: boolean
   onClose: () => void
-  onSubmit: (event: Event) => void
-  initialEvent?: Event
+  onSubmit: (event: CalendarEvent) => void
+  initialEvent?: CalendarEvent
 }
 
 export const EventModal = ({ show, onClose, onSubmit, initialEvent }: EventModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null)
-  const [event, setEvent] = useState<Event>(initialEvent || {
+  const [calendarEvent, setCalendarEvent] = useState<CalendarEvent>(initialEvent || {
     title: '',
     description: '',
-    start_date: new Date(),
-    end_date: new Date()
+    start: new Date(),
+    end: new Date()
   })
 
   // Handle click outside
@@ -52,13 +47,13 @@ export const EventModal = ({ show, onClose, onSubmit, initialEvent }: EventModal
           <h2 className={styles.modalTitle}>Add New Event</h2>
 
           <div className={styles.modalBody}>
-            <form onSubmit={(e) => { e.preventDefault(); onSubmit(event) }}>
+            <form onSubmit={(e) => { e.preventDefault(); onSubmit(calendarEvent ) }}>
               <div className={styles.formGroup}>
                 <label>Title</label>
                 <input
                   type="text"
-                  value={event.title}
-                  onChange={(e) => setEvent({...event, title: e.target.value})}
+                  value={calendarEvent.title}
+                  onChange={(e) => setCalendarEvent({...calendarEvent, title: e.target.value})}
                   className={styles.input}
                 />
               </div>
@@ -66,8 +61,8 @@ export const EventModal = ({ show, onClose, onSubmit, initialEvent }: EventModal
               <div className={styles.formGroup}>
                 <label>Description</label>
                 <textarea
-                  value={event.description}
-                  onChange={(e) => setEvent({...event, description: e.target.value})}
+                  value={calendarEvent.description}
+                  onChange={(e) => setCalendarEvent({...calendarEvent, description: e.target.value})}
                   className={styles.textarea}
                 />
               </div>
@@ -76,8 +71,8 @@ export const EventModal = ({ show, onClose, onSubmit, initialEvent }: EventModal
                 <label>Start Date</label>
                 <input
                   type="datetime-local"
-                  value={format(event.start_date, "yyyy-MM-dd'T'HH:mm")}
-                  onChange={(e) => setEvent({...event, start_date: new Date(e.target.value)})}
+                  value={format(calendarEvent.start, "yyyy-MM-dd'T'HH:mm")}
+                  onChange={(e) => setCalendarEvent({...calendarEvent, start: new Date(e.target.value)})}
                   className={styles.input}
                 />
               </div>
@@ -86,8 +81,8 @@ export const EventModal = ({ show, onClose, onSubmit, initialEvent }: EventModal
                 <label>End Date</label>
                 <input
                   type="datetime-local"
-                  value={format(event.end_date, "yyyy-MM-dd'T'HH:mm")}
-                  onChange={(e) => setEvent({...event, end_date: new Date(e.target.value)})}
+                  value={format(calendarEvent.end, "yyyy-MM-dd'T'HH:mm")}
+                  onChange={(e) => setCalendarEvent({...calendarEvent, end: new Date(e.target.value)})}
                   className={styles.input}
                 />
               </div>

@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 from typing import List
+from pydantic import BaseModel
 
 from app.database.session import get_db
 from app.models.summary import Summary
@@ -57,22 +58,28 @@ def get_tweets_by_date(date: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Invalid date format")
 
 
-# Create event
+class EventCreate(BaseModel):
+    title: str
+    description: str
+    start: datetime
+    end: datetime
+
+
 @app.post("/api/events/")
 def create_event(
-    title: str,
-    description: str,
-    start_date: datetime,
-    end_date: datetime,
+    event: EventCreate,
     db: Session = Depends(get_db),
 ):
+    print(
+        f"Creating event: {event.title}, {event.description}, {event.start}, {event.end}"
+    )
     try:
         event = event_repository.create_event(
             db=db,
-            title=title,
-            description=description,
-            start_date=start_date,
-            end_date=end_date,
+            title=event.title,
+            description=event.description,
+            start=event.start,
+            end=event.end,
         )
         return event
     except Exception as e:
@@ -80,30 +87,26 @@ def create_event(
 
 
 # Update event
-# Update event
 @app.put("/api/events/{event_id}")
 def update_event(
     event_id: int,
-    title: str = None,
-    description: str = None,
-    start_date: datetime = None,
-    end_date: datetime = None,
+    event: EventCreate,
     db: Session = Depends(get_db),
 ):
-    update_data = {}
-    if title is not None:
-        update_data["title"] = title
-    if description is not None:
-        update_data["description"] = description
-    if start_date is not None:
-        update_data["start_date"] = start_date
-    if end_date is not None:
-        update_data["end_date"] = end_date
-
-    event = event_repository.update_event(db, event_id, **update_data)
-    if not event:
-        raise HTTPException(status_code=404, detail="Event not found")
-    return event
+    try:
+        updated_event = event_repository.update_event(
+            db,
+            event_id,
+            title=event.title,
+            description=event.description,
+            start=event.start,
+            end=event.end,
+        )
+        if not updated_event:
+            raise HTTPException(status_code=404, detail="Event not found")
+        return updated_event
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 # get all events

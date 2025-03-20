@@ -9,14 +9,14 @@ logger = logging.getLogger(__name__)
 
 
 def create_event(
-    db: Session, title: str, description: str, start_date: datetime, end_date: datetime
+    db: Session, title: str, description: str, start: datetime, end: datetime
 ) -> Event:
     try:
         event = Event(
             title=title,
             description=description,
-            start_date=start_date,
-            end_date=end_date,
+            start=start,
+            end=end,
         )
         db.add(event)
         db.commit()
@@ -32,7 +32,7 @@ def get_event_by_id(db: Session, event_id: int) -> Optional[Event]:
 
 
 def get_all_events(db: Session) -> List[Event]:
-    return db.query(Event).order_by(Event.start_date.desc()).all()
+    return db.query(Event).order_by(Event.start.desc()).all()
 
 
 def update_event(db: Session, event_id: int, **kwargs) -> Optional[Event]:
@@ -55,13 +55,13 @@ def delete_event(db: Session, event_id: int) -> bool:
 
 
 def get_events_by_date_range(
-    db: Session, start_date: datetime, end_date: datetime
+    db: Session, start: datetime, end: datetime
 ) -> List[Event]:
     return (
         db.query(Event)
-        .filter(Event.start_date >= start_date)
-        .filter(Event.end_date <= end_date)
-        .order_by(Event.start_date.desc())
+        .filter(Event.start >= start)
+        .filter(Event.end <= end)
+        .order_by(Event.start.desc())
         .all()
     )
 
@@ -74,7 +74,6 @@ def save_event(db: Session, event_data: dict) -> Optional[Event]:
         db.refresh(event)
         return event
     except Exception as e:
-
         logger.error(f"Error saving event: {str(e)}")
         db.rollback()
         return None

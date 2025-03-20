@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar'
 import { EventModal } from "./EventModal"
 
@@ -6,6 +6,7 @@ import { format, parse, startOfWeek, getDay } from 'date-fns'
 import "react-big-calendar/lib/css/react-big-calendar.css"
 import styles from './Calendar.module.css'
 import calendarStyles from './BigCalendar.module.css'
+import { API_ROUTES } from '@/config/api'
 
 
 const localizer = dateFnsLocalizer({
@@ -16,14 +17,12 @@ const localizer = dateFnsLocalizer({
   locales: { 'en-US': require('date-fns/locale/en-US') },
 })
 
-
-interface CalendarEvent {
+export interface CalendarEvent {
+  id?: number
   title: string
   start: Date
   end: Date
-  allDay?: boolean
-  summary: string
-  sections: Record<string, string>
+  description: string
 }
 
 interface Summary {
@@ -32,16 +31,12 @@ interface Summary {
   date_summarized: string
 }
 
-interface Event {
-  id?: number
+interface Event { // this is the event from the backend
+  id: number
   title: string
   description: string
-  start_date: Date
-  end_date: Date
-}
-
-interface CalendarProps {
-  summaries: Summary[]
+  start: string
+  end: string
 }
 
 const OpenAISummaryEvent = ({ event }: { event: CalendarEvent }) => {
@@ -54,29 +49,79 @@ const OpenAISummaryEvent = ({ event }: { event: CalendarEvent }) => {
   );
 };
 
-export const Calendar = ({ summaries }: CalendarProps) => {
-  const [selectedEvent, setSelectedEvent] = useState<Summary | null>(null)
-  const [showEventModal, setShowEventModal] = useState(false)
-  const [newEvent, setNewEvent] = useState<Event>({
-    title: '',
-    description: '',
-    start_date: new Date(),
-    end_date: new Date()
-  })
-
-  const events = summaries.map(summary => ({
-    title: summary.summary_text,
-    start: new Date(summary.date_summarized),
-    end: new Date(summary.date_summarized),
-    resource: summary.summary_text
+      // Convert summaries to calendar events
+const convertSummariesToCalendarEvents = (summaries: Summary[]): CalendarEvent[] => {
+    return summaries.map(summary => ({
+        title: "OpenAI Summary",
+        start: new Date(summary.date_summarized),
+        end: new Date(summary.date_summarized),
+        description: summary.summary_text
+    }))
+}
+const convertEventsToCalendarEvents = (events: Event[]): CalendarEvent[] => {
+  return events.map(event => ({
+    title: event.title,
+    start: new Date(event.start),
+    end: new Date(event.end),
+    description: event.description
   }))
+}
 
-  const handleEventSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    // TODO: API call to create event
-    console.log("xx");
-    setShowEventModal(false)
+export const Calendar = () => {
+  const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([])
+  const [showEventModal, setShowEventModal] = useState(false)
+  const fetchEventsAndSummaries = async () => {
+    try {
+      const [summariesResponse, eventsResponse] = await Promise.all([
+        fetch(API_ROUTES.SUMMARIES_GET),
+        fetch(API_ROUTES.EVENTS_GET)
+      ]);
+
+      if (!summariesResponse.ok) throw new Error('Failed to fetch summaries');
+      if (!eventsResponse.ok) throw new Error('Failed to fetch events');
+
+      const [summariesData, eventsData] = await Promise.all([
+        summariesResponse.json(),
+        eventsResponse.json()
+      ]);
+
+      const summaryEvents = convertSummariesToCalendarEvents(summariesData);
+      const calendarEvents = convertEventsToCalendarEvents(eventsData);
+      setCalendarEvents([...summaryEvents, ...calendarEvents]);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
   }
+
+  const handleCalendarEventSubmit = async (event: CalendarEvent) => {
+    try {
+      if (!event.title || !event.start || !event.end) {
+        throw new Error('fields are required');
+      }
+      const response = await fetch(API_ROUTES.EVENTS_POST, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(event)
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.detail || 'Failed to create event')
+      }
+
+      setShowEventModal(false)
+      // Refresh calendarEvent after creating new event
+      // yes i fetch redundantly summaries, but it's a small app and i don't want to complicate the code
+      await fetchEventsAndSummaries()
+
+    } catch (error) {
+      console.error('Error creating event:', error)
+    }
+  }
+
+  useEffect(() => {
+    fetchEventsAndSummaries()
+  }, [])
 
   return (
     <div className={styles.calendarContainer}>
@@ -92,10 +137,10 @@ export const Calendar = ({ summaries }: CalendarProps) => {
       <div className={calendarStyles.calendar}>
         <BigCalendar
           localizer={localizer}
-          events={events}
-          components={{
-            event: OpenAISummaryEvent
-          }}
+          events={calendarEvents}
+          // components={{
+          //   event: OpenAISummaryEvent
+          // }}
           startAccessor="start"
           endAccessor="end"
           style={{
@@ -123,12 +168,12 @@ export const Calendar = ({ summaries }: CalendarProps) => {
       <EventModal
         show={showEventModal}
         onClose={() => setShowEventModal(false)}
-        onSubmit={handleEventSubmit}
+        onSubmit={handleCalendarEventSubmit}
       />
     </div>
   )
 }
 
 export const CalendarComponent = () => {
-  return <Calendar summaries={[]}  />
+  return <Calendar />
 }
