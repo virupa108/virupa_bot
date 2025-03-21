@@ -109,6 +109,17 @@ def update_event(
         raise HTTPException(status_code=400, detail=str(e))
 
 
+# delete event
+@app.delete("/api/events/{event_id}")
+def delete_event(event_id: int, db: Session = Depends(get_db)):
+    try:
+        print(f"Deleting event with id: {event_id}")
+        event_repository.delete_event(db, event_id)
+        return {"message": "Event deleted successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
 # get all events
 @app.get("/api/events/")
 def get_events(db: Session = Depends(get_db)):

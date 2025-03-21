@@ -19,8 +19,10 @@
   max-width: 600px;
   max-height: 80vh;
   overflow-y: auto;
-  font-size: 14px;
-  line-height: 1.6;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 14.5px;
+  line-height: 1.7;
+  letter-spacing: 0.2px;
 }
 
 .modalHeader {
@@ -67,6 +69,7 @@
   font-weight: 600;
   color: #516c9b;
   margin: 15px 0 10px 0;
+  letter-spacing: -0.2px;
 }
 
 .username {
@@ -74,13 +77,15 @@
   padding: 2px 4px;
   border-radius: 4px;
   background-color: rgba(49, 130, 206, 0.1);
-  font-weight: bold;
+  font-weight: 500;
+  letter-spacing: 0;
 }
 
 .summaryText {
   white-space: pre-wrap;
-  line-height: 1.6;
-  color: #333;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 400;
 }
 
 .summaryText ul {
@@ -93,10 +98,30 @@
 }
 
 .mainSectionTitle {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 20px;
   font-weight: 600;
-  color: rgb(139, 180, 216);  /* Match the blue color from the image */
+  color: rgb(139, 180, 216);
   margin: 25px 0 15px 0;
   padding: 8px 0;
-  border-bottom: 1px solid rgba(139, 180, 216, 0.3);  /* Lighter version of the text color */
+  border-bottom: 1px solid rgba(139, 180, 216, 0.3);
+  letter-spacing: -0.3px;
+}
+
+/* Add dark theme styles */
+.modalContent {
+  background: #1a1a1a;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.modalHeader h3 {
+  color: rgb(139, 180, 216);
+}
+
+.closeButton {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.closeButton:hover {
+  color: rgba(255, 255, 255, 0.9);
 }

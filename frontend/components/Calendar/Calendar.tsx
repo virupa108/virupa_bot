@@ -2,12 +2,13 @@ import { useState, useEffect } from 'react'
 import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar'
 import { EventModal } from "./EventModal"
 import { SummaryModal } from './SummaryModal'
+import { EventActionModal } from './EventActionModal'
 
 import { format, parse, startOfWeek, getDay } from 'date-fns'
 import "react-big-calendar/lib/css/react-big-calendar.css"
 import styles from './Calendar.module.css'
 import calendarStyles from './BigCalendar.module.css'
-import { API_ROUTES } from '@/config/api'
+import { API_ROUTES, SUMMARY_OPENAI_TITLE } from '@/config/api'
 
 
 const localizer = dateFnsLocalizer({
@@ -40,20 +41,12 @@ interface Event { // this is the event from the backend
   end: string
 }
 
-const OpenAISummaryEvent = ({ event }: { event: CalendarEvent }) => {
-  return (
-    <div className={styles.eventWrapper}>
-      <div className={styles.eventContent}>
-        OpenAI Summary
-      </div>
-    </div>
-  );
-};
 
       // Convert summaries to calendar events
 const convertSummariesToCalendarEvents = (summaries: Summary[]): CalendarEvent[] => {
     return summaries.map(summary => ({
-        title: "OpenAI Summary",
+      // I wont eddit summaries, so i dont need id
+        title: SUMMARY_OPENAI_TITLE,
         start: new Date(summary.date_summarized),
         end: new Date(summary.date_summarized),
         description: summary.summary_text
@@ -61,6 +54,7 @@ const convertSummariesToCalendarEvents = (summaries: Summary[]): CalendarEvent[]
 }
 const convertEventsToCalendarEvents = (events: Event[]): CalendarEvent[] => {
   return events.map(event => ({
+    id: event.id,
     title: event.title,
     start: new Date(event.start),
     end: new Date(event.end),
@@ -74,6 +68,8 @@ export const Calendar = () => {
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null)
   const [showSummaryModal, setShowSummaryModal] = useState(false)
   const [selectedSummary, setSelectedSummary] = useState<{description: string, date: Date} | null>(null)
+  const [showEventActionModal, setShowEventActionModal] = useState(false)
+
 
   const fetchEventsAndSummaries = async () => {
     try {
@@ -125,14 +121,45 @@ export const Calendar = () => {
   }
 
   const handleSelectEvent = (event: CalendarEvent) => {
-    if (event.title === "OpenAI Summary") {
+    if (event.title === SUMMARY_OPENAI_TITLE) {
       setSelectedSummary({
         description: event.description,
         date: event.start
       });
       setShowSummaryModal(true);
+    } else {
+      setSelectedEvent(event);
+      setShowEventActionModal(true);
     }
   }
+
+  const handleEditEvent = async (updatedEvent: CalendarEvent) => {
+    try {
+      const response = await fetch(`${API_ROUTES.EVENTS_PUT}${updatedEvent.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedEvent),
+      });
+
+      if (!response.ok) throw new Error('Failed to update event');
+      await fetchEventsAndSummaries() // refresh calendar
+    } catch (error) {
+      console.error('Error updating event:', error);
+    }
+  };
+
+  const handleDeleteEvent = async (eventId: number) => {
+    try {
+      const response = await fetch(`${API_ROUTES.EVENTS_DELETE}${eventId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) throw new Error('Failed to delete event');
+      await fetchEventsAndSummaries() // refresh calendar
+    } catch (error) {
+      console.error('Error deleting event:', error);
+    }
+  };
 
   useEffect(() => {
     fetchEventsAndSummaries()
@@ -185,7 +212,7 @@ export const Calendar = () => {
           setSelectedEvent(null)
         }}
         event={selectedEvent}
-        readOnly={selectedEvent?.title === "OpenAI Summary"}
+        readOnly={selectedEvent?.title === SUMMARY_OPENAI_TITLE}
         onSubmit={handleCalendarEventSubmit}
       />
 
@@ -197,6 +224,19 @@ export const Calendar = () => {
         }}
         summary={selectedSummary}
       />
+
+      {selectedEvent && (
+        <EventActionModal
+          show={showEventActionModal}
+          onClose={() => {
+            setShowEventActionModal(false);
+            setSelectedEvent(null);
+          }}
+          event={selectedEvent}
+          onEdit={handleEditEvent}
+          onDelete={handleDeleteEvent}
+        />
+      )}
     </div>
   )
 }
