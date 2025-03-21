@@ -31,3 +31,9 @@ starlette
 
 # Date handling
 python-dateutil
+
+# APScheduler
+apscheduler==3.10.1
+
+# FRED API
+fredapi==0.5.1

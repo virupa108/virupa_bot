@@ -9,7 +9,12 @@ logger = logging.getLogger(__name__)
 
 
 def create_event(
-    db: Session, title: str, description: str, start: datetime, end: datetime
+    db: Session,
+    title: str,
+    description: str,
+    start: datetime,
+    end: datetime,
+    event_type: str = "manual",
 ) -> Event:
     try:
         event = Event(
@@ -17,6 +22,7 @@ def create_event(
             description=description,
             start=start,
             end=end,
+            event_type=event_type,
         )
         db.add(event)
         db.commit()
@@ -77,3 +83,9 @@ def save_event(db: Session, event_data: dict) -> Optional[Event]:
         logger.error(f"Error saving event: {str(e)}")
         db.rollback()
         return None
+
+
+def get_event_by_title_and_date(db: Session, title: str, start_date: datetime) -> Event:
+    return (
+        db.query(Event).filter(Event.title == title, Event.start == start_date).first()
+    )

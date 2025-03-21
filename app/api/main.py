@@ -10,8 +10,15 @@ from app.models.summary import Summary
 from app.models.tweet import Tweet
 from app.models.event import Event
 from app.repositories import event_repository
+from app.services.scheduler import init_scheduler
 
 app = FastAPI()
+
+
+@app.on_event("startup")
+async def startup_event():
+    init_scheduler()
+
 
 # CORS middleware for frontend
 app.add_middleware(
@@ -113,7 +120,6 @@ def update_event(
 @app.delete("/api/events/{event_id}")
 def delete_event(event_id: int, db: Session = Depends(get_db)):
     try:
-        print(f"Deleting event with id: {event_id}")
         event_repository.delete_event(db, event_id)
         return {"message": "Event deleted successfully"}
     except Exception as e:
