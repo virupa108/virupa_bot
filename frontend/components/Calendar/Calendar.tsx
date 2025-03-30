@@ -4,11 +4,13 @@ import { EventModal } from "./EventModal"
 import { SummaryModal } from './SummaryModal'
 import { EventActionModal } from './EventActionModal'
 
-import { format, parse, startOfWeek, getDay } from 'date-fns'
+import { format, formatInTimeZone } from 'date-fns-tz'
+import { parse, startOfWeek, getDay } from 'date-fns'
 import "react-big-calendar/lib/css/react-big-calendar.css"
 import styles from './Calendar.module.css'
 import calendarStyles from './BigCalendar.module.css'
 import { API_ROUTES, SUMMARY_OPENAI_TITLE } from '@/config/api'
+import { getTokenPrice } from '@/services/tokenPrices'
 
 
 const localizer = dateFnsLocalizer({
@@ -25,6 +27,7 @@ export interface CalendarEvent {
   start: Date
   end: Date
   description: string
+  event_type?: string
 }
 
 interface Summary {
@@ -39,6 +42,7 @@ interface Event { // this is the event from the backend
   description: string
   start: string
   end: string
+  event_type?: string  // Add this
 }
 
 
@@ -52,15 +56,60 @@ const convertSummariesToCalendarEvents = (summaries: Summary[]): CalendarEvent[]
         description: summary.summary_text
     }))
 }
-const convertEventsToCalendarEvents = (events: Event[]): CalendarEvent[] => {
-  return events.map(event => ({
-    id: event.id,
-    title: event.title,
-    start: new Date(event.start),
-    end: new Date(event.end),
-    description: event.description
-  }))
+
+function convertUTCDateToLocalDate(date: Date): Date {
+    const newDate = new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000);
+    const offset = date.getTimezoneOffset() / 60;
+    const hours = date.getHours();
+    newDate.setHours(hours - offset);
+    return newDate;
 }
+
+const convertEventsToCalendarEvents = async (events: Event[]): Promise<CalendarEvent[]> => {
+  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  const processedEvents = await Promise.all(events.map(async event => {
+    let title = event.title;
+    let description = event.description;
+
+    // Check if this is a token unlock event
+    if (event.event_type === 'vesting') {
+      // Extract token amount and symbol using regex
+      // Updated regex to handle "Team and Advisor Tokens: 450,000,000 ARB" format
+      const match = event.description.match(/:\s*(\d+(?:,\d+)*(?:\.\d+)?)\s*([A-Z]+)/);
+      if (match) {
+        const amount = parseFloat(match[1].replace(/,/g, ''));
+        const symbol = match[2];
+
+        try {
+          // Fetch token price
+          const price = await getTokenPrice(symbol);
+          if (price > 0) {
+            const value = price * amount;
+            // Add value to description
+            description = `${event.description}\nEstimated Value: $${value.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2
+            })}`;
+          }
+        } catch (error) {
+          console.error(`Error fetching price for ${symbol}:`, error);
+        }
+      }
+    }
+
+    return {
+      id: event.id,
+      title: `${title} (${formatInTimeZone(convertUTCDateToLocalDate(new Date(event.start)), tz, 'HH:mm')})`,
+      start: new Date(event.start),
+      end: new Date(event.end),
+      description,
+      event_type: event.event_type
+    };
+  }));
+
+  return processedEvents;
+};
 
 export const Calendar = () => {
   const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([])
@@ -87,7 +136,7 @@ export const Calendar = () => {
       ]);
 
       const summaryEvents = convertSummariesToCalendarEvents(summariesData);
-      const calendarEvents = convertEventsToCalendarEvents(eventsData);
+      const calendarEvents = await convertEventsToCalendarEvents(eventsData);
       setCalendarEvents([...summaryEvents, ...calendarEvents]);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -180,9 +229,6 @@ export const Calendar = () => {
         <BigCalendar
           localizer={localizer}
           events={calendarEvents}
-          // components={{
-          //   event: OpenAISummaryEvent
-          // }}
           startAccessor="start"
           endAccessor="end"
           style={{
@@ -192,16 +238,9 @@ export const Calendar = () => {
           views={['month', 'week', 'day']}
           defaultView='month'
           onSelectEvent={handleSelectEvent}
-          formats={{
-            eventTimeRangeFormat: () => '',
-            dayRangeHeaderFormat: ({ start, end }) =>
-              `${format(start, 'MMM d')} - ${format(end, 'MMM d, yyyy')}`
-          }}
           eventPropGetter={(event) => ({
-            className: styles.summaryEvent
+            className: event.event_type === 'vesting' ? styles.vestingEvent : styles.summaryEvent
           })}
-          className={calendarStyles.calendar}
-          toolbarClassName={calendarStyles.toolbar}
         />
       </div>
 
@@ -229,8 +268,8 @@ export const Calendar = () => {
         <EventActionModal
           show={showEventActionModal}
           onClose={() => {
-            setShowEventActionModal(false);
-            setSelectedEvent(null);
+            setShowEventActionModal(false)
+            setSelectedEvent(null)
           }}
           event={selectedEvent}
           onEdit={handleEditEvent}

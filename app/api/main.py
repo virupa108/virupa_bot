@@ -11,13 +11,16 @@ from app.models.tweet import Tweet
 from app.models.event import Event
 from app.repositories import event_repository
 from app.services.scheduler import init_scheduler
+from app.utils.config import Config
 
 app = FastAPI()
 
 
 @app.on_event("startup")
 async def startup_event():
-    init_scheduler()
+    db = next(get_db())
+    config = Config()
+    await init_scheduler(db, config)
 
 
 # CORS middleware for frontend
@@ -129,4 +132,6 @@ def delete_event(event_id: int, db: Session = Depends(get_db)):
 # get all events
 @app.get("/api/events/")
 def get_events(db: Session = Depends(get_db)):
-    return event_repository.get_all_events(db)
+    events = event_repository.get_all_events(db)
+    # Filter out small daily unlocks for vesting events
+    return events

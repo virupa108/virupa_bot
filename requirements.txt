@@ -37,3 +37,10 @@ apscheduler==3.10.1
 
 # FRED API
 fredapi==0.5.1
+
+# aiohttp
+aiohttp==3.9.3
+
+# Web scraping
+beautifulsoup4==4.12.3
+Brotli==1.1.0  # Add this for handling brotli compression

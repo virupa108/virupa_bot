@@ -13,6 +13,7 @@ from app.repositories.tweet_repository import (
 from app.utils import setup_logger
 from app.services.openai_service import OpenAIService
 from app.repositories.summary_repository import save_summary
+from app.services.economic_calendar import EconomicCalendar
 
 # Set up logging with colors
 logger = setup_logger()

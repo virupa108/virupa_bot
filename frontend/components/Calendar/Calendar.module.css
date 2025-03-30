@@ -64,3 +64,19 @@
   border: none;
   border-radius: 4px;
 }
+
+.vestingEvent {
+  background-color: #ff9800 !important;  /* Orange for vesting events */
+  color: white !important;
+  border: none !important;
+  border-radius: 4px !important;
+  opacity: 0.8 !important;
+}
+
+.summaryEvent {
+  background-color: #0969da !important;  /* Blue for other events */
+  color: white !important;
+  border: none !important;
+  border-radius: 4px !important;
+  opacity: 0.8 !important;
+}

@@ -9,46 +9,45 @@ from app.models.event import Event
 from app.repositories import event_repository
 from dotenv import load_dotenv
 from app.utils.config import Config
+from .token_unlocks import TokenUnlocksService
 
 logger = logging.getLogger(__name__)
 
 
 class EconomicCalendar:
-    def __init__(self):
-        self.config = Config()
+    def __init__(self, db, config):
+        self.db = db
+        self.config = config
+        self.token_unlocks = TokenUnlocksService()
 
-    def update_calendar(self):
-        db = next(get_db())
+    async def update_calendar(self):
         try:
-            # Fetch events from Trading Economics
-            # processed_events = self.process_events(events)
-
-            # Add backup events for critical dates
+            # Get backup events (critical dates)
             backup_events = self.get_critical_events()
-            all_events = backup_events
 
-            logger.info(f"All events: {all_events}")
+            # Get token unlock events
+            unlock_events = await self.token_unlocks.get_token_unlocks()
+            logger.info(f"Unlock events: {unlock_events}")
+
+            # Combine both types of events
+            events = backup_events + unlock_events
 
             # Update database
-            for event_data in all_events:
+            for event_data in events:
                 try:
                     # Check if event already exists
                     existing_event = event_repository.get_event_by_title_and_date(
-                        db, event_data["title"], event_data["start"]
+                        self.db, event_data["title"], event_data["start"]
                     )
                     # if exists and not manual then update
-                    if (
-                        existing_event
-                        and existing_event.event_type != "manual"
-                        or existing_event != "manual-economic"
-                    ):
+                    if existing_event:
                         # Update existing event
                         event_repository.update_event(
-                            db, existing_event.id, **event_data
+                            self.db, existing_event.id, **event_data
                         )
                     else:
                         # Create new event
-                        event_repository.create_event(db, **event_data)
+                        event_repository.create_event(self.db, **event_data)
 
                 except Exception as e:
                     logger.error(
@@ -56,13 +55,13 @@ class EconomicCalendar:
                     )
                     continue
 
-            db.commit()
+            self.db.commit()
 
         except Exception as e:
             logger.error(f"Error in update_calendar: {str(e)}")
-            db.rollback()
+            self.db.rollback()
         finally:
-            db.close()
+            self.db.close()
 
     def get_critical_events(self) -> List[Dict[str, Any]]:
         """Get critical events from all regions"""
@@ -72,17 +71,22 @@ class EconomicCalendar:
         for region, categories in critical_events.items():
             for category, dates in categories.items():
                 for date, details in dates.items():
-                    events.append(
-                        {
-                            "title": f"{category}-{region}",
-                            "description": f"{details}",
-                            "start": datetime.strptime(
-                                f"{date}T14:00:00", "%Y-%m-%dT%H:%M:%S"
-                            ),
-                            "end": datetime.strptime(
-                                f"{date}T15:00:00", "%Y-%m-%dT%H:%M:%S"
-                            ),
-                            "event_type": category.lower(),
-                        }
-                    )
+                    try:
+                        # Parse ISO format with UTC timezone
+                        start_time = datetime.strptime(date, "%Y-%m-%dT%H:%M:%SZ")
+                        end_time = start_time + timedelta(hours=1)
+
+                        events.append(
+                            {
+                                "title": f"{region}: {category}",
+                                "description": f"{details}",
+                                "start": start_time,
+                                "end": end_time,
+                                "event_type": category.lower(),
+                            }
+                        )
+                    except Exception as e:
+                        logger.error(f"Error parsing date {date}: {str(e)}")
+                        continue
+
         return events

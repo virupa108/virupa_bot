@@ -1,22 +1,24 @@
+from app.utils.config import Config
 from apscheduler.schedulers.background import BackgroundScheduler
 from app.services.economic_calendar import EconomicCalendar
 import logging
+import asyncio
 
 logger = logging.getLogger(__name__)
 
 
-def init_scheduler():
+async def init_scheduler(db, config: Config):
     try:
         scheduler = BackgroundScheduler()
-        calendar = EconomicCalendar()
+        calendar = EconomicCalendar(db, config)
 
         # Run immediately on startup
-        calendar.update_calendar()
+        await calendar.update_calendar()
         logger.info("Initial calendar update completed")
 
-        # Then schedule periodic updates
+        # Schedule updates
         scheduler.add_job(
-            calendar.update_calendar,
+            lambda: asyncio.create_task(calendar.update_calendar()),
             "interval",
             hours=24,  # Run every 24 hours
             next_run_time=None,  # Don't run immediately again
@@ -27,5 +29,5 @@ def init_scheduler():
         return scheduler
 
     except Exception as e:
-        logger.error(f"Failed to initialize scheduler: {str(e)}")
+        logger.error(f"Error initializing scheduler: {str(e)}")
         raise

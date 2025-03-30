@@ -4,6 +4,7 @@ from app.models.event import Event
 from datetime import datetime
 from typing import List, Optional
 import logging
+from sqlalchemy import or_
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +39,19 @@ def get_event_by_id(db: Session, event_id: int) -> Optional[Event]:
 
 
 def get_all_events(db: Session) -> List[Event]:
-    return db.query(Event).order_by(Event.start.desc()).all()
+    vesting_event_to_filter = ["celestia", "sei"]
+
+    # Create filter conditions for each token
+    token_filters = [
+        Event.description.ilike(f"%{token}%") for token in vesting_event_to_filter
+    ]
+
+    return (
+        db.query(Event)
+        .filter(~((Event.event_type == "vesting") & or_(*token_filters)))
+        .order_by(Event.start.desc())
+        .all()
+    )
 
 
 def update_event(db: Session, event_id: int, **kwargs) -> Optional[Event]:
