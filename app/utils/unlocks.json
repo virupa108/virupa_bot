@@ -5,378 +5,357 @@
       "description": "Ecosystem Incentives Tokens: 94.19M ENA (~$35.16M, 1.78% of M.Cap)",
       "end": "2025-04-02T13:00:00Z",
       "start": "2025-04-02T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Core Contributors & Investors Tokens: 171.88M ENA (~$64.16M, 3.25% of M.Cap)",
       "end": "2025-04-05T13:00:00Z",
       "start": "2025-04-05T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Ecosystem Incentives Tokens: 94.19M ENA (~$35.16M, 1.78% of M.Cap)",
       "end": "2025-05-02T13:00:00Z",
       "start": "2025-05-02T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Core Contributors & Investors Tokens: 171.88M ENA (~$64.16M, 3.25% of M.Cap)",
       "end": "2025-05-05T13:00:00Z",
       "start": "2025-05-05T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Ecosystem Incentives Tokens: 53.55M ENA, Foundation Tokens: 40.64M ENA",
       "end": "2025-06-02T13:00:00Z",
       "start": "2025-06-02T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Core Contributors Tokens: 93.74M ENA, Investors Tokens: 78.11M ENA",
       "end": "2025-06-05T13:00:00Z",
       "start": "2025-06-05T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Ecosystem Incentives Tokens: 53.55M ENA, Foundation Tokens: 40.64M ENA",
       "end": "2025-07-02T13:00:00Z",
       "start": "2025-07-02T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Core Contributors Tokens: 93.74M ENA, Investors Tokens: 78.11M ENA",
       "end": "2025-07-05T13:00:00Z",
       "start": "2025-07-05T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Ecosystem Incentives Tokens: 53.55M ENA, Foundation Tokens: 40.64M ENA",
       "end": "2025-08-02T13:00:00Z",
       "start": "2025-08-02T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Core Contributors Tokens: 93.74M ENA, Investors Tokens: 78.11M ENA",
       "end": "2025-08-05T13:00:00Z",
       "start": "2025-08-05T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Ecosystem Incentives Tokens: 53.55M ENA, Foundation Tokens: 40.64M ENA",
       "end": "2025-09-02T13:00:00Z",
       "start": "2025-09-02T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Core Contributors Tokens: 93.74M ENA, Investors Tokens: 78.11M ENA",
       "end": "2025-09-05T13:00:00Z",
       "start": "2025-09-05T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Ecosystem Incentives Tokens: 53.55M ENA, Foundation Tokens: 40.64M ENA",
       "end": "2025-10-02T13:00:00Z",
       "start": "2025-10-02T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Core Contributors Tokens: 93.74M ENA, Investors Tokens: 78.11M ENA",
       "end": "2025-10-05T13:00:00Z",
       "start": "2025-10-05T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Ecosystem Incentives Tokens: 53.55M ENA, Foundation Tokens: 40.64M ENA",
       "end": "2025-11-02T13:00:00Z",
       "start": "2025-11-02T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Core Contributors Tokens: 93.74M ENA, Investors Tokens: 78.11M ENA",
       "end": "2025-11-05T13:00:00Z",
       "start": "2025-11-05T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Ecosystem Incentives Tokens: 53.55M ENA, Foundation Tokens: 40.64M ENA",
       "end": "2025-12-02T13:00:00Z",
       "start": "2025-12-02T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Core Contributors Tokens: 93.74M ENA, Investors Tokens: 78.11M ENA",
       "end": "2025-12-05T13:00:00Z",
       "start": "2025-12-05T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Ecosystem Incentives Tokens: 53.55M ENA, Foundation Tokens: 40.64M ENA",
       "end": "2026-01-02T13:00:00Z",
       "start": "2026-01-02T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Core Contributors Tokens: 93.74M ENA, Investors Tokens: 78.11M ENA",
       "end": "2026-01-05T13:00:00Z",
       "start": "2026-01-05T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Ecosystem Incentives Tokens: 53.55M ENA, Foundation Tokens: 40.64M ENA",
       "end": "2026-02-02T13:00:00Z",
       "start": "2026-02-02T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Core Contributors Tokens: 93.74M ENA, Investors Tokens: 78.11M ENA",
       "end": "2026-02-05T13:00:00Z",
       "start": "2026-02-05T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Ecosystem Incentives Tokens: 53.55M ENA, Foundation Tokens: 40.64M ENA",
       "end": "2026-03-02T13:00:00Z",
       "start": "2026-03-02T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Core Contributors Tokens: 93.74M ENA, Investors Tokens: 78.11M ENA",
       "end": "2026-03-05T13:00:00Z",
       "start": "2026-03-05T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Ecosystem Incentives Tokens: 53.55M ENA, Foundation Tokens: 40.64M ENA",
       "end": "2026-04-02T13:00:00Z",
       "start": "2026-04-02T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Core Contributors Tokens: 93.74M ENA, Investors Tokens: 78.11M ENA",
       "end": "2026-04-05T13:00:00Z",
       "start": "2026-04-05T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Ecosystem Incentives Tokens: 53.55M ENA, Foundation Tokens: 40.64M ENA",
       "end": "2026-05-02T13:00:00Z",
       "start": "2026-05-02T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Core Contributors Tokens: 93.74M ENA, Investors Tokens: 78.11M ENA",
       "end": "2026-05-05T13:00:00Z",
       "start": "2026-05-05T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Ecosystem Incentives Tokens: 53.55M ENA, Foundation Tokens: 40.64M ENA",
       "end": "2026-06-02T13:00:00Z",
       "start": "2026-06-02T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Core Contributors Tokens: 93.74M ENA, Investors Tokens: 78.11M ENA",
       "end": "2026-06-05T13:00:00Z",
       "start": "2026-06-05T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Ecosystem Incentives Tokens: 53.55M ENA, Foundation Tokens: 40.64M ENA",
       "end": "2026-07-02T13:00:00Z",
       "start": "2026-07-02T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Core Contributors Tokens: 93.74M ENA, Investors Tokens: 78.11M ENA",
       "end": "2026-07-05T13:00:00Z",
       "start": "2026-07-05T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Ecosystem Incentives Tokens: 53.55M ENA, Foundation Tokens: 40.64M ENA",
       "end": "2026-08-02T13:00:00Z",
       "start": "2026-08-02T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Core Contributors Tokens: 93.74M ENA, Investors Tokens: 78.11M ENA",
       "end": "2026-08-05T13:00:00Z",
       "start": "2026-08-05T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Ecosystem Incentives Tokens: 53.55M ENA, Foundation Tokens: 40.64M ENA",
       "end": "2026-09-02T13:00:00Z",
       "start": "2026-09-02T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Core Contributors Tokens: 93.74M ENA, Investors Tokens: 78.11M ENA",
       "end": "2026-09-05T13:00:00Z",
       "start": "2026-09-05T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Ecosystem Incentives Tokens: 53.55M ENA, Foundation Tokens: 40.64M ENA",
       "end": "2026-10-02T13:00:00Z",
       "start": "2026-10-02T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Core Contributors Tokens: 93.74M ENA, Investors Tokens: 78.11M ENA",
       "end": "2026-10-05T13:00:00Z",
       "start": "2026-10-05T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Ecosystem Incentives Tokens: 53.55M ENA, Foundation Tokens: 40.64M ENA",
       "end": "2026-11-02T13:00:00Z",
       "start": "2026-11-02T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Core Contributors Tokens: 93.74M ENA, Investors Tokens: 78.11M ENA",
       "end": "2026-11-05T13:00:00Z",
       "start": "2026-11-05T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Ecosystem Incentives Tokens: 53.55M ENA, Foundation Tokens: 40.64M ENA",
       "end": "2026-12-02T13:00:00Z",
       "start": "2026-12-02T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
     },
     {
       "title": "CRYPTO: ENA Unlock",
       "description": "Core Contributors Tokens: 93.74M ENA, Investors Tokens: 78.11M ENA",
       "end": "2026-12-05T13:00:00Z",
       "start": "2026-12-05T12:00:00Z",
-      "event_type": "vesting",
-      "created_at": "2024-03-30T19:36:15.408599Z",
-      "updated_at": "2024-03-30T19:36:15.408599Z"
+      "event_type": "vesting"
+    },
+    {
+      "title": "CRYPTO: KMNO Unlock",
+      "description": "Unlock of 229.35M KMNO tokens (2.29% of Total Supply), valued at approximately $10.25M (16.99% of Market Cap)",
+      "start": "2025-04-30T00:00:00Z",
+      "end": "2025-04-30T23:59:59Z",
+      "event_type": "vesting"
+    },
+    {
+      "title": "CRYPTO: KMNO Unlock",
+      "description": "Unlock of 229.35M KMNO tokens (2.29% of Total Supply)",
+      "start": "2025-05-30T00:00:00Z",
+      "end": "2025-05-30T23:59:59Z",
+      "event_type": "vesting"
+    },
+    {
+      "title": "CRYPTO: KMNO Unlock",
+      "description": "Unlock of 229.35M KMNO tokens (2.29% of Total Supply)",
+      "start": "2025-06-30T00:00:00Z",
+      "end": "2025-06-30T23:59:59Z",
+      "event_type": "vesting"
+    },
+    {
+      "title": "CRYPTO: KMNO Unlock",
+      "description": "Unlock of 229.35M KMNO tokens (2.29% of Total Supply)",
+      "start": "2025-07-30T00:00:00Z",
+      "end": "2025-07-30T23:59:59Z",
+      "event_type": "vesting"
+    },
+    {
+      "title": "CRYPTO: KMNO Unlock",
+      "description": "Unlock of 229.35M KMNO tokens (2.29% of Total Supply)",
+      "start": "2025-08-30T00:00:00Z",
+      "end": "2025-08-30T23:59:59Z",
+      "event_type": "vesting"
+    },
+    {
+      "title": "CRYPTO: KMNO Unlock",
+      "description": "Unlock of 229.35M KMNO tokens (2.29% of Total Supply)",
+      "start": "2025-09-30T00:00:00Z",
+      "end": "2025-09-30T23:59:59Z",
+      "event_type": "vesting"
+    },
+    {
+      "title": "CRYPTO: KMNO Unlock",
+      "description": "Unlock of 229.35M KMNO tokens (2.29% of Total Supply)",
+      "start": "2025-10-30T00:00:00Z",
+      "end": "2025-10-30T23:59:59Z",
+      "event_type": "vesting"
+    },
+    {
+      "title": "CRYPTO: KMNO Unlock",
+      "description": "Unlock of 229.35M KMNO tokens (2.29% of Total Supply)",
+      "start": "2025-11-30T00:00:00Z",
+      "end": "2025-11-30T23:59:59Z",
+      "event_type": "vesting"
+    },
+    {
+      "title": "CRYPTO: KMNO Unlock",
+      "description": "Unlock of 229.35M KMNO tokens (2.29% of Total Supply)",
+      "start": "2025-12-30T00:00:00Z",
+      "end": "2025-12-30T23:59:59Z",
+      "event_type": "vesting"
     }
   ]
 }

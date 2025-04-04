@@ -80,3 +80,14 @@
   border-radius: 4px !important;
   opacity: 0.8 !important;
 }
+
+.todayCell {
+  background-color: var(--highlight-bg, #e6f3ff) !important;
+  color: var(--highlight-text, #e81a1a) !important;
+  font-weight: bold !important;
+  border: 2px solid var(--highlight-border, #e81a1a) !important;
+}
+
+.dayCell {
+  /* default cell styling if needed */
+}

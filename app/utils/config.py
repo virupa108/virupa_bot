@@ -1,5 +1,7 @@
 import os
+import json
 from dotenv import load_dotenv
+from pathlib import Path
 
 load_dotenv()
 
@@ -8,6 +10,31 @@ class Config:
     def __init__(self, local_test=False, load_from_db=False):
         self.LOCAL_TEST = local_test
         self.LOAD_FROM_DB = load_from_db
+
+        # Load events and unlocks from JSON files
+        base_path = Path(__file__).parent
+
+        # Load critical events
+        events_path = base_path / "events.json"
+        with open(events_path) as f:
+            self.CRITICAL_EVENTS = json.load(f)
+
+        # Load token unlocks
+        unlocks_path = base_path / "unlocks.json"
+        with open(unlocks_path) as f:
+            unlocks_data = json.load(f)
+            # Convert unlocks format to match TOKEN_UNLOCKS structure
+            self.TOKEN_UNLOCKS = []
+            for event in unlocks_data["events"]:
+                # Only include required fields
+                filtered_event = {
+                    "title": event["title"],
+                    "description": event["description"],
+                    "start": event["start"],
+                    "end": event["end"],
+                    "event_type": event["event_type"],
+                }
+                self.TOKEN_UNLOCKS.append(filtered_event)
 
     FRED_API_KEY = os.getenv("FRED_API_KEY")
     FRED_BASE_URL = "https://api.stlouisfed.org/fred/series/observations"
@@ -78,110 +105,3 @@ class Config:
         """
     }
     # Critical events
-
-    CRITICAL_EVENTS = {
-        "USA": {
-            "FED": {
-                "2025-01-29T18:30:00Z": "FOMC Meeting + Rate Decision",
-                "2025-03-19T18:30:00Z": "FOMC Meeting + Rate Decision",
-                "2025-05-07T18:30:00Z": "FOMC Meeting + Rate Decision",
-                "2025-06-18T18:30:00Z": "FOMC Meeting + Rate Decision",
-                "2025-07-30T18:30:00Z": "FOMC Meeting + Rate Decision",
-                "2025-09-17T18:30:00Z": "FOMC Meeting + Rate Decision",
-                "2025-10-29T18:30:00Z": "FOMC Meeting + Rate Decision",
-                "2025-12-10T18:30:00Z": "FOMC Meeting + Rate Decision",
-            },
-            "CPI": {
-                "2025-01-15T12:30:00Z": "Consumer Price Index Release",
-                "2025-02-12T12:30:00Z": "Consumer Price Index Release",
-                "2025-03-12T12:30:00Z": "Consumer Price Index Release",
-                "2025-04-10T12:30:00Z": "Consumer Price Index Release",
-                "2025-05-13T12:30:00Z": "Consumer Price Index Release",
-                "2025-06-11T12:30:00Z": "Consumer Price Index Release",
-                "2025-07-15T12:30:00Z": "Consumer Price Index Release",
-                "2025-08-12T12:30:00Z": "Consumer Price Index Release",
-                "2025-09-11T12:30:00Z": "Consumer Price Index Release",
-                "2025-10-15T12:30:00Z": "Consumer Price Index Release",
-                "2025-11-13T12:30:00Z": "Consumer Price Index Release",
-                "2025-12-10T12:30:00Z": "Consumer Price Index Release",
-            },
-            "GDP": {
-                "2025-01-30T12:30:00Z": "GDP Release (Advance Estimate)",
-                "2025-02-27T12:30:00Z": "GDP Release (Second Estimate)",
-                "2025-03-27T12:30:00Z": "GDP Release (Third Estimate)",
-                "2025-04-30T12:30:00Z": "GDP Release (Advance Estimate)",
-                "2025-05-29T12:30:00Z": "GDP Release (Second Estimate)",
-                "2025-06-26T12:30:00Z": "GDP Release (Third Estimate)",
-                "2025-07-30T12:30:00Z": "GDP Release (Advance Estimate)",
-                "2025-08-28T12:30:00Z": "GDP Release (Second Estimate)",
-                "2025-09-25T12:30:00Z": "GDP Release (Third Estimate)",
-                "2025-10-30T12:30:00Z": "GDP Release (Advance Estimate)",
-                "2025-11-26T12:30:00Z": "GDP Release (Second Estimate)",
-                "2025-12-19T12:30:00Z": "GDP Release (Third Estimate)",
-            },
-            "Unemployment": {
-                "2025-01-10T12:30:00Z": "Employment Situation Release",
-                "2025-02-07T12:30:00Z": "Employment Situation Release",
-                "2025-03-07T12:30:00Z": "Employment Situation Release",
-                "2025-04-04T12:30:00Z": "Employment Situation Release",
-                "2025-05-02T12:30:00Z": "Employment Situation Release",
-                "2025-06-06T12:30:00Z": "Employment Situation Release",
-                "2025-07-03T12:30:00Z": "Employment Situation Release",
-                "2025-08-01T12:30:00Z": "Employment Situation Release",
-                "2025-09-05T12:30:00Z": "Employment Situation Release",
-                "2025-10-03T12:30:00Z": "Employment Situation Release",
-                "2025-11-07T12:30:00Z": "Employment Situation Release",
-                "2025-12-05T12:30:00Z": "Employment Situation Release",
-            },
-        },
-        "EU": {
-            "ECB": {
-                "2025-01-30T13:15:00Z": "ECB Monetary Policy Meeting + Rate Decision",
-                "2025-03-06T13:15:00Z": "ECB Monetary Policy Meeting + Rate Decision",
-                "2025-04-17T13:15:00Z": "ECB Monetary Policy Meeting + Rate Decision",
-                "2025-06-05T13:15:00Z": "ECB Monetary Policy Meeting + Rate Decision",
-                "2025-07-24T13:15:00Z": "ECB Monetary Policy Meeting + Rate Decision",
-                "2025-09-11T13:15:00Z": "ECB Monetary Policy Meeting + Rate Decision",
-                "2025-10-30T13:15:00Z": "ECB Monetary Policy Meeting + Rate Decision",
-                "2025-12-18T13:15:00Z": "ECB Monetary Policy Meeting + Rate Decision",
-            },
-            "CPI": {
-                "2025-01-17T12:00:00Z": "Euro Area Inflation Rate Release",
-                "2025-02-21T12:30:00Z": "Euro Area Inflation Rate Release",
-                "2025-03-20T12:30:00Z": "Euro Area Inflation Rate Release",
-                "2025-04-17T12:30:00Z": "Euro Area Inflation Rate Release",
-                "2025-05-22T12:30:00Z": "Euro Area Inflation Rate Release",
-                "2025-06-19T12:30:00Z": "Euro Area Inflation Rate Release",
-                "2025-07-17T12:30:00Z": "Euro Area Inflation Rate Release",
-                "2025-08-21T12:30:00Z": "Euro Area Inflation Rate Release",
-                "2025-09-18T12:30:00Z": "Euro Area Inflation Rate Release",
-                "2025-10-16T12:30:00Z": "Euro Area Inflation Rate Release",
-                "2025-11-20T12:30:00Z": "Euro Area Inflation Rate Release",
-                "2025-12-18T12:30:00Z": "Euro Area Inflation Rate Release",
-            },
-            "GDP": {
-                "2025-02-14T12:30:00Z": "Preliminary Flash Estimate of GDP Growth",
-                "2025-03-07T12:30:00Z": "Flash Estimate of GDP and Employment Growth",
-                "2025-05-15T12:30:00Z": "Preliminary Flash Estimate of GDP Growth",
-                "2025-06-06T12:30:00Z": "Flash Estimate of GDP and Employment Growth",
-                "2025-08-14T12:30:00Z": "Preliminary Flash Estimate of GDP Growth",
-                "2025-09-05T12:30:00Z": "Flash Estimate of GDP and Employment Growth",
-                "2025-11-14T12:30:00Z": "Preliminary Flash Estimate of GDP Growth",
-                "2025-12-05T12:30:00Z": "Flash Estimate of GDP and Employment Growth",
-            },
-            "Unemployment": {
-                "2025-01-31T12:30:00Z": "Euro Area Unemployment Rate Release",
-                "2025-02-28T12:30:00Z": "Euro Area Unemployment Rate Release",
-                "2025-03-31T12:30:00Z": "Euro Area Unemployment Rate Release",
-                "2025-04-30T12:30:00Z": "Euro Area Unemployment Rate Release",
-                "2025-05-30T12:30:00Z": "Euro Area Unemployment Rate Release",
-                "2025-06-30T12:30:00Z": "Euro Area Unemployment Rate Release",
-                "2025-07-31T12:30:00Z": "Euro Area Unemployment Rate Release",
-                "2025-08-29T12:30:00Z": "Euro Area Unemployment Rate Release",
-                "2025-09-30T12:30:00Z": "Euro Area Unemployment Rate Release",
-                "2025-10-31T12:30:00Z": "Euro Area Unemployment Rate Release",
-                "2025-11-28T12:30:00Z": "Euro Area Unemployment Rate Release",
-                "2025-12-31T12:30:00Z": "Euro Area Unemployment Rate Release",
-            },
-        },
-    }

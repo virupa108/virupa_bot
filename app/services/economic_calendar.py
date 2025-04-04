@@ -24,13 +24,14 @@ class EconomicCalendar:
         try:
             # Get backup events (critical dates)
             backup_events = self.get_critical_events()
+            backup_unlocks = self.get_backup_unlocks()
 
             # Get token unlock events
-            unlock_events = await self.token_unlocks.get_token_unlocks()
-            logger.info(f"Unlock events: {unlock_events}")
+            # i dont want to keep using this api was just testing it
+            # unlock_events = await self.token_unlocks.get_token_unlocks()
 
-            # Combine both types of events
-            events = backup_events + unlock_events
+            # events = backup_events + unlock_events + backup_unlocks
+            events = backup_events + backup_unlocks
 
             # Update database
             for event_data in events:
@@ -90,3 +91,8 @@ class EconomicCalendar:
                         continue
 
         return events
+
+    def get_backup_unlocks(self) -> List[Dict[str, Any]]:
+        """Get backup unlocks from all regions"""
+        backup_unlocks = self.config.TOKEN_UNLOCKS
+        return backup_unlocks

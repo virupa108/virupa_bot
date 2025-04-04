@@ -39,11 +39,11 @@ def get_event_by_id(db: Session, event_id: int) -> Optional[Event]:
 
 
 def get_all_events(db: Session) -> List[Event]:
-    vesting_event_to_filter = ["celestia", "sei"]
+    vesting_event_to_filter = ["Celestia", "Sei", "Sui"]
 
     # Create filter conditions for each token
     token_filters = [
-        Event.description.ilike(f"%{token}%") for token in vesting_event_to_filter
+        Event.description.like(f"%{token}%") for token in vesting_event_to_filter
     ]
 
     return (

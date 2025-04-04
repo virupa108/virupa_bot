@@ -22,7 +22,6 @@ class TokenUnlocksService:
 
             # List of tokens to check
             tokens = [
-                "Sui",
                 "Aptos",
                 "Sei",
                 "Pyth",

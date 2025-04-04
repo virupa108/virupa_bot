@@ -214,6 +214,14 @@ export const Calendar = () => {
     fetchEventsAndSummaries()
   }, [])
 
+  const dayPropGetter = (date: Date) => {
+    const isToday = new Date().toDateString() === date.toDateString()
+    return {
+      className: isToday ? styles.currentDay : '',
+      className: isToday ? styles.todayCell : styles.dayCell
+    }
+  }
+
   return (
     <div className={styles.calendarContainer}>
       <div className={styles.buttonContainer}>
@@ -238,6 +246,7 @@ export const Calendar = () => {
           views={['month', 'week', 'day']}
           defaultView='month'
           onSelectEvent={handleSelectEvent}
+          dayPropGetter={dayPropGetter}
           eventPropGetter={(event) => ({
             className: event.event_type === 'vesting' ? styles.vestingEvent : styles.summaryEvent
           })}
